@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "957923571509",
+    "project_id": "bikeshare-6b7f0",
+    "storage_bucket": "bikeshare-6b7f0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:957923571509:android:7ff70c82e006023f713e7c",
+        "android_client_info": {
+          "package_name": "space.danielpinto.bikeshare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "957923571509-s923kdpfl7ji2q2mp70s32p7kbh4e151.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMEcZFKxiTKLnz7Cl6trYFTZME8kagugw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "957923571509-s923kdpfl7ji2q2mp70s32p7kbh4e151.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:957923571509:android:fcc54cf7fd1d3cc9713e7c",
+        "android_client_info": {
+          "package_name": "space.danielpinto.easybikeshare.easybikeshare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "957923571509-s923kdpfl7ji2q2mp70s32p7kbh4e151.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMEcZFKxiTKLnz7Cl6trYFTZME8kagugw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "957923571509-s923kdpfl7ji2q2mp70s32p7kbh4e151.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

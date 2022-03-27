@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>957923571509-olekcg0bq7gmgqvnkj44raghbj1mt8v7.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.957923571509-olekcg0bq7gmgqvnkj44raghbj1mt8v7</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBXGvQmp2dyhSx8xHnlPDNj-MHywsBIktQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>957923571509</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>space.danielpinto.easybikeshare.easybikeshare</string>
+	<key>PROJECT_ID</key>
+	<string>bikeshare-6b7f0</string>
+	<key>STORAGE_BUCKET</key>
+	<string>bikeshare-6b7f0.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:957923571509:ios:d570487abe6f0185713e7c</string>
+</dict>
+</plist>
