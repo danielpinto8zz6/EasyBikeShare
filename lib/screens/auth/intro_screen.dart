@@ -9,17 +9,13 @@ import 'login_screen.dart';
 class IntroPage extends StatefulWidget {
   final UserRepository userRepository;
 
-  IntroPage({Key? key, required this.userRepository}) : super(key: key);
+  const IntroPage({Key? key, required this.userRepository}) : super(key: key);
 
   @override
-  _IntroPageState createState() => _IntroPageState(userRepository);
+  _IntroPageState createState() => _IntroPageState();
 }
 
 class _IntroPageState extends State<IntroPage> {
-  final UserRepository userRepository;
-
-  _IntroPageState(this.userRepository);
-
   bool clicked = false;
 
   void afterIntroComplete() {
@@ -32,11 +28,11 @@ class _IntroPageState extends State<IntroPage> {
     PageViewModel(
       titleWidget: Column(
         children: <Widget>[
-          Text(
+          const Text(
             'FREE GIFT',
             style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Container(
@@ -50,7 +46,7 @@ class _IntroPageState extends State<IntroPage> {
       ),
       body:
           "Free gifts with purchase. Offer free gifts like a gift wrap, gift card, or any free product.",
-      image: Center(
+      image: const Center(
           // child: SvgPicture.asset("assets/icons/gift.svg")
           ),
       decoration: const PageDecoration(
@@ -65,7 +61,7 @@ class _IntroPageState extends State<IntroPage> {
     PageViewModel(
       titleWidget: Column(
         children: <Widget>[
-          Text(
+          const Text(
             'PAYMENT INTEGRATION',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -73,7 +69,7 @@ class _IntroPageState extends State<IntroPage> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Container(
@@ -87,7 +83,7 @@ class _IntroPageState extends State<IntroPage> {
       ),
       body:
           "A payment gateway as a merchant service that processes credit card payments for ecommerce sites and traditional brick and mortar stores.",
-      image: Center(
+      image: const Center(
           child: SizedBox(
         width: 450.0,
         // child: SvgPicture.asset("assets/icons/payment.svg"),
@@ -104,11 +100,11 @@ class _IntroPageState extends State<IntroPage> {
     PageViewModel(
       titleWidget: Column(
         children: <Widget>[
-          Text(
+          const Text(
             'CALL CENTER',
             style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
+          const SizedBox(
             height: 8,
           ),
           Container(
@@ -122,7 +118,7 @@ class _IntroPageState extends State<IntroPage> {
       ),
       body:
           "Call center gives a small business a big business feel. 24-hour sales, order entry, payment processing, billing inquiries, and more.",
-      image: Center(
+      image: const Center(
           child: SizedBox(
         width: 450.0,
         // child: SvgPicture.asset("assets/icons/call.svg"),
@@ -141,7 +137,7 @@ class _IntroPageState extends State<IntroPage> {
   @override
   Widget build(BuildContext context) {
     return clicked
-        ? LoginScreen(userRepository: userRepository)
+        ? LoginScreen(userRepository: widget.userRepository)
         : IntroductionScreen(
             pages: pages,
             onDone: () {

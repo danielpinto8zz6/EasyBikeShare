@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:easybikeshare/repositories/user_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'auth.dart';
@@ -8,45 +7,40 @@ class AuthenticationBloc
   final UserRepository userRepository;
 
   AuthenticationBloc({required this.userRepository})
-      : super(AuthenticationUninitialized());
-
-  @override
-  Stream<AuthenticationState> mapEventToState(
-    AuthenticationEvent event,
-  ) async* {
-    if (event is AppStarted) {
+      : super(AuthenticationUninitialized()) {
+    on<AppStarted>((event, emit) async {
       final bool hasToken = await userRepository.hasToken();
       if (hasToken) {
-        yield AuthenticationAuthenticated();
+        emit(AuthenticationAuthenticated());
       } else {
-        yield AuthenticationUnauthenticated();
+        emit(AuthenticationUnauthenticated());
       }
-    }
+    });
 
-    if (event is LoggedIn) {
-      yield AuthenticationLoading();
+    on<LoggedIn>((event, emit) async {
+      emit(AuthenticationLoading());
       await userRepository.persistToken(event.token);
       await userRepository.persistUsername(event.username);
-      yield AuthenticationAuthenticated();
-    }
+      emit(AuthenticationAuthenticated());
+    });
 
-    if (event is LoggedOut) {
-      yield AuthenticationLoading();
+    on<LoggedOut>((event, emit) async {
+      emit(AuthenticationLoading());
       await userRepository.deleteToken();
       await userRepository.deleteUsername();
-      yield AuthenticationUnauthenticated();
-    }
+      emit(AuthenticationUnauthenticated());
+    });
 
-    if (event is RedirectedToRegister) {
-      yield RedirectingToRegister();
-    }
+    on<RedirectedToRegister>((event, emit) async {
+      emit(RedirectingToRegister());
+    });
 
-    if (event is RedirectedToLogin) {
-      yield RedirectingToLogin();
-    }
+    on<RedirectedToLogin>((event, emit) async {
+      emit(RedirectingToLogin());
+    });
 
-    if (event is Registered) {
-      yield RedirectingToLogin();
-    }
+    on<Registered>((event, emit) async {
+      emit(RedirectingToLogin());
+    });
   }
 }

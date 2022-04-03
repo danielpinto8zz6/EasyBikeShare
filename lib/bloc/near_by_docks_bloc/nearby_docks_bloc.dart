@@ -19,20 +19,17 @@ class NearbyDocksBloc extends Bloc<NearbyDocksEvent, NearByDocksState> {
       {required this.dockRepository,
       required this.mapController,
       required this.bikeRepository})
-      : super(NearByDocksInitial());
-
-  @override
-  Stream<NearByDocksState> mapEventToState(NearbyDocksEvent event) async* {
-    if (event is LoadUserLocation) {
+      : super(NearByDocksInitial()) {
+    on<LoadUserLocation>((event, emit) async {
       final position = await _determinePosition();
 
       mapController.move(LatLng(position.latitude, position.longitude), 16);
 
-      yield UserLocationLoaded(position);
-    }
+      emit(UserLocationLoaded(position));
+    });
 
-    if (event is GetNearByDocks) {
-      yield NearByDocksLoading();
+    on<GetNearByDocks>((event, emit) async {
+      emit(NearByDocksLoading());
 
       final position = await _determinePosition();
 
@@ -45,20 +42,22 @@ class NearbyDocksBloc extends Bloc<NearbyDocksEvent, NearByDocksState> {
         final List<Dock> docks =
             await dockRepository.getNearByDocks(coordinates, 100, false);
 
-        yield NearByDocksLoaded(docks: docks);
+        emit(NearByDocksLoaded(docks: docks));
       } catch (_) {
-        yield const NearByDocksFailure(error: "Failed to load");
+        emit(const NearByDocksFailure(error: "Failed to load"));
       }
-    }
+    });
 
-    if (event is DockDetailsButtonPressed) {
-      yield DockDetailsLoading();
+    on<DockDetailsButtonPressed>((event, emit) async {
+      emit(DockDetailsLoading());
 
       try {
         final bike = await bikeRepository.getBikeById(event.dock.bikeId!);
-        yield DockDetailsLoaded(event.dock, bike);
-      } catch (error) {}
-    }
+        emit(DockDetailsLoaded(event.dock, bike));
+      } catch (error) {
+        rethrow;
+      }
+    });
   }
 
   /// Determine the current position of the device.

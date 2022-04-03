@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:easybikeshare/bloc/auth_bloc/auth.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -14,12 +12,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthenticationBloc authenticationBloc;
 
   LoginBloc({required this.userRepository, required this.authenticationBloc})
-      : super(LoginInitial());
-
-  @override
-  Stream<LoginState> mapEventToState(LoginEvent event) async* {
-    if (event is LoginButtonPressed) {
-      yield LoginLoading();
+      : super(LoginInitial()) {
+    on<LoginButtonPressed>((event, emit) async {
+      emit(LoginLoading());
 
       try {
         final token = await userRepository.login(
@@ -29,10 +24,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
         authenticationBloc
             .add(LoggedIn(token: token, username: event.username));
-        yield LoginInitial();
+        emit(LoginInitial());
       } catch (error) {
-        yield LoginFailure(error: error.toString());
+        emit(LoginFailure(error: error.toString()));
       }
-    }
+    });
   }
 }

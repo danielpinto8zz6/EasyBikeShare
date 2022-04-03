@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:easybikeshare/bloc/near_by_docks_bloc/nearby_docks_bloc.dart';
 import 'package:easybikeshare/bloc/near_by_docks_bloc/nearby_docks_event.dart';
 import 'package:easybikeshare/bloc/near_by_docks_bloc/nearby_docks_state.dart';
-import 'package:easybikeshare/bloc/rental_bloc/bloc/rental_bloc.dart';
 import 'package:easybikeshare/models/dock.dart';
 import 'package:easybikeshare/notification.dart';
 import 'package:easybikeshare/providers/cachted_tile_provider.dart';
@@ -11,7 +10,7 @@ import 'package:easybikeshare/repositories/bike_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/token_repository.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
-import 'package:easybikeshare/screens/bike_scanner/bike_scanner.dart';
+import 'package:easybikeshare/screens/bike_scanner/bike_scanner_screen.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
 import 'package:easybikeshare/style/colors.dart' as Style;
 import 'package:flutter/material.dart';
@@ -41,21 +40,10 @@ class NearByDocksScreen extends StatefulWidget {
       : super(key: key);
 
   @override
-  _NearByDocksScreenState createState() => _NearByDocksScreenState(
-      dockRepository,
-      userRepository,
-      tokenRepository,
-      bikeRepository,
-      rentalRepository);
+  _NearByDocksScreenState createState() => _NearByDocksScreenState();
 }
 
 class _NearByDocksScreenState extends State<NearByDocksScreen> {
-  final DockRepository dockRepository;
-  final UserRepository userRepository;
-  final TokenRepository tokenRepository;
-  final BikeRepository bikeRepository;
-  final RentalRepository rentalRepository;
-
   late CenterOnLocationUpdate _centerOnLocationUpdate;
   late StreamController<double> _centerCurrentLocationStreamController;
 
@@ -69,9 +57,6 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
 
   late final NearbyDocksBloc bloc;
 
-  _NearByDocksScreenState(this.dockRepository, this.userRepository,
-      this.tokenRepository, this.bikeRepository, this.rentalRepository);
-
   Future init() async {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
@@ -79,8 +64,9 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
 
   @override
   void initState() {
-    final firebaseMessaging =
-        FCM(userRepository: userRepository, tokenRepository: tokenRepository);
+    final firebaseMessaging = FCM(
+        userRepository: widget.userRepository,
+        tokenRepository: widget.tokenRepository);
     firebaseMessaging.setNotifications();
 
     firebaseMessaging.streamCtlr.stream.listen(_changeData);
@@ -106,207 +92,118 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var isModalOpen = false;
     return Scaffold(
-      body: BlocProvider<NearbyDocksBloc>(create: (context) {
-        bloc = NearbyDocksBloc(
-            dockRepository: dockRepository,
-            mapController: _mapController,
-            bikeRepository: bikeRepository)
-          ..add(const GetNearByDocks());
+      body: BlocProvider(
+          create: (context) {
+            bloc = NearbyDocksBloc(
+                dockRepository: widget.dockRepository,
+                mapController: _mapController,
+                bikeRepository: widget.bikeRepository)
+              ..add(const GetNearByDocks());
 
-        return bloc;
-      }, child: BlocBuilder<NearbyDocksBloc, NearByDocksState>(
-          builder: (context, nearByDocksState) {
-        return FlutterMap(
-          mapController: _mapController,
-          options: MapOptions(
-            plugins: [
-              MarkerClusterPlugin(),
-            ],
-            interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
-            maxZoom: 19,
-            onTap: (tapPosition, point) =>
-                _popupLayerController.hideAllPopups(),
-            // Stop centering the location marker on the map if user interacted with the map.
-            onPositionChanged: (MapPosition position, bool hasGesture) {
-              if (hasGesture) {
-                setState(() =>
-                    _centerOnLocationUpdate = CenterOnLocationUpdate.never);
-              }
-            },
-          ),
-          children: [
-            BlocListener<NearbyDocksBloc, NearByDocksState>(
-                listener: (context, state) {
-              if (state is DockDetailsLoading) {
-                if (isModalOpen == true) {
-                  Navigator.of(context).pop();
-                }
-                showBarModalBottomSheet<void>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      isModalOpen = true;
-                      return Container(
-                        height: 500,
-                        color: Colors.white,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: const <Widget>[
-                              CircularProgressIndicator(),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).whenComplete(() => isModalOpen = false);
-              }
-              if (state is DockDetailsLoaded) {
-                if (isModalOpen == true) {
-                  Navigator.of(context).pop();
-                }
+            return bloc;
+          },
+          child: BlocListener<NearbyDocksBloc, NearByDocksState>(
+              listener: (context, state) {
+            if (state is DockDetailsLoading) {
+              final provider = BlocProvider.of<NearbyDocksBloc>(context);
 
-                if (state.bike == null) {
-                  showBarModalBottomSheet<void>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        isModalOpen = true;
-                        return Container(
-                          height: 500,
-                          color: Colors.white,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: const <Widget>[
-                                Text("Failed to load."),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).whenComplete(() => isModalOpen = false);
-
-                  return;
-                }
-
-                showBarModalBottomSheet<void>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      isModalOpen = true;
-
-                      return Container(
-                        height: 500,
-                        color: Colors.white,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              const Image(
-                                  image: AssetImage('assets/bicycle.png'),
-                                  width: 200),
-                              Text(state.bike!.brand + ' ' + state.bike!.model),
-                              if (state.dock.address != null)
-                                Text(state.dock.address!),
-                              ElevatedButton(
-                                child: const Text("Rent"),
-                                onPressed: () {
-                                  BlocProvider.of<RentalBloc>(context).add(
-                                    RentalButtonPressed(
-                                        state.dock, state.bike!),
-                                  );
-                                  Navigator.of(context).pop();
-                                },
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    }).whenComplete(() => isModalOpen = false);
-              }
-            }),
-            TileLayerWidget(
-                options: TileLayerOptions(
-              urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              tileProvider: const CachedTileProvider(),
-              subdomains: ['a', 'b', 'c'],
-              maxZoom: 19,
-            )),
-            MarkerLayerWidget(
-                options: MarkerLayerOptions(
-              markers: (nearByDocksState is NearByDocksLoaded)
-                  ? buildDockMarkers(nearByDocksState.docks)
-                  : [],
-            )),
-            LocationMarkerLayerWidget(
-              plugin: LocationMarkerPlugin(
-                centerCurrentLocationStream:
-                    _centerCurrentLocationStreamController.stream,
-                centerOnLocationUpdate: _centerOnLocationUpdate,
-              ),
-            ),
-            Positioned(
-              right: 20,
-              bottom: 20,
-              height: 35,
-              width: 35,
-              child: FloatingActionButton(
-                onPressed: () {
-                  // Automatically center the location marker on the map when location updated until user interact with the map.
-                  setState(() =>
-                      _centerOnLocationUpdate = CenterOnLocationUpdate.always);
-                  // Center the location marker on the map and zoom the map to level 16.
-                  _centerCurrentLocationStreamController.add(16);
-                },
-                child: const Icon(
-                  Icons.my_location,
-                  color: Colors.white,
-                ),
-                backgroundColor: Style.Colors.mainColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
-              ),
-            ),
-            // PopupMarkerLayerWidget(
-            //   options: PopupMarkerLayerOptions(
-            //     popupController: _popupLayerController,
-            //     markers: _markers,
-            //     markerRotateAlignment:
-            //         PopupMarkerLayerOptions.rotationAlignmentFor(
-            //             AnchorAlign.top),
-            //     popupBuilder: (BuildContext context, Marker marker) =>
-            //         DockDetailsPopup(marker),
-            //   ),
-            // ),
-            MarkerClusterLayerWidget(
-              options: MarkerClusterLayerOptions(
-                maxClusterRadius: 120,
-                size: const Size(40, 40),
-                fitBoundsOptions: const FitBoundsOptions(
-                  padding: EdgeInsets.all(50),
-                ),
-                markers: _markers,
-                polygonOptions: const PolygonOptions(
-                    borderColor: Colors.blueAccent,
-                    color: Colors.black12,
-                    borderStrokeWidth: 3),
-                builder: (context, markers) {
-                  return FloatingActionButton(
-                    child: Text(markers.length.toString()),
-                    onPressed: null,
-                  );
+              showDockDetailsModal(provider);
+            }
+          }, child: BlocBuilder<NearbyDocksBloc, NearByDocksState>(
+                  builder: (context, nearByDocksState) {
+            return FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                plugins: [
+                  MarkerClusterPlugin(),
+                ],
+                interactiveFlags:
+                    InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+                maxZoom: 19,
+                onTap: (tapPosition, point) =>
+                    _popupLayerController.hideAllPopups(),
+                // Stop centering the location marker on the map if user interacted with the map.
+                onPositionChanged: (MapPosition position, bool hasGesture) {
+                  if (hasGesture) {
+                    setState(() =>
+                        _centerOnLocationUpdate = CenterOnLocationUpdate.never);
+                  }
                 },
               ),
-            )
-          ],
-        );
-      })),
+              children: [
+                TileLayerWidget(
+                    options: TileLayerOptions(
+                  urlTemplate:
+                      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  tileProvider: const CachedTileProvider(),
+                  subdomains: ['a', 'b', 'c'],
+                  maxZoom: 19,
+                )),
+                MarkerLayerWidget(
+                    options: MarkerLayerOptions(
+                  markers: (nearByDocksState is NearByDocksLoaded)
+                      ? buildDockMarkers(nearByDocksState.docks)
+                      : [],
+                )),
+                LocationMarkerLayerWidget(
+                  plugin: LocationMarkerPlugin(
+                    centerCurrentLocationStream:
+                        _centerCurrentLocationStreamController.stream,
+                    centerOnLocationUpdate: _centerOnLocationUpdate,
+                  ),
+                ),
+                Positioned(
+                  right: 20,
+                  bottom: 20,
+                  height: 35,
+                  width: 35,
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      // Automatically center the location marker on the map when location updated until user interact with the map.
+                      setState(() => _centerOnLocationUpdate =
+                          CenterOnLocationUpdate.always);
+                      // Center the location marker on the map and zoom the map to level 16.
+                      _centerCurrentLocationStreamController.add(16);
+                    },
+                    child: const Icon(
+                      Icons.my_location,
+                      color: Colors.white,
+                    ),
+                    backgroundColor: Style.Colors.mainColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
+                ),
+                MarkerClusterLayerWidget(
+                  options: MarkerClusterLayerOptions(
+                    maxClusterRadius: 120,
+                    size: const Size(40, 40),
+                    fitBoundsOptions: const FitBoundsOptions(
+                      padding: EdgeInsets.all(50),
+                    ),
+                    markers: _markers,
+                    polygonOptions: const PolygonOptions(
+                        borderColor: Colors.blueAccent,
+                        color: Colors.black12,
+                        borderStrokeWidth: 3),
+                    builder: (context, markers) {
+                      return FloatingActionButton(
+                        child: Text(markers.length.toString()),
+                        onPressed: null,
+                      );
+                    },
+                  ),
+                )
+              ],
+            );
+          }))),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const BikeScannerScreen(),
+            builder: (context) =>
+                BikeScannerScreen(rentalRepository: widget.rentalRepository),
           ));
         },
         label: const Text("Scan"),
@@ -356,5 +253,69 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
     _docks = docks;
 
     return _markers;
+  }
+
+  void showDockDetailsModal(NearbyDocksBloc provider) {
+    showBarModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return BlocProvider.value(
+              value: provider,
+              child: Container(
+                  height: 500,
+                  color: Colors.white,
+                  child: BlocBuilder<NearbyDocksBloc, NearByDocksState>(
+                      builder: (context, state) {
+                    if (state is DockDetailsLoaded) {
+                      if (state.bike == null) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: const <Widget>[
+                              Text("Failed to load details."),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            const Image(
+                                image: AssetImage('assets/bicycle.png'),
+                                width: 200),
+                            Text(state.bike!.brand + ' ' + state.bike!.model),
+                            if (state.dock.address != null)
+                              Text(state.dock.address!),
+                            ElevatedButton(
+                              child: const Text("Rent"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => BikeScannerScreen(
+                                      rentalRepository:
+                                          widget.rentalRepository),
+                                ));
+                              },
+                            )
+                          ],
+                        ),
+                      );
+                    }
+
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: const <Widget>[
+                          CircularProgressIndicator(),
+                        ],
+                      ),
+                    );
+                  })));
+        });
   }
 }

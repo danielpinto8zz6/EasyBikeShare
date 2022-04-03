@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:easybikeshare/style/colors.dart' as Style;
-
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
@@ -30,7 +28,7 @@ class AppTheme {
             )),
           ),
         ),
-        inputDecorationTheme: InputDecorationTheme(),
-        textTheme: TextTheme());
+        inputDecorationTheme: const InputDecorationTheme(),
+        textTheme: const TextTheme());
   }
 }

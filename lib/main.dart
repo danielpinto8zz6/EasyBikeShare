@@ -16,31 +16,9 @@ import 'bloc/auth_bloc/auth.dart';
 import 'repositories/user_repository.dart';
 import 'screens/auth/intro_screen.dart';
 
-class SimpleBlocObserver extends BlocObserver {
-  @override
-  void onEvent(Bloc bloc, Object? event) {
-    super.onEvent(bloc, event);
-    print(event);
-  }
-
-  @override
-  void onTransition(Bloc bloc, Transition transition) {
-    super.onTransition(bloc, transition);
-    print(transition);
-  }
-
-  @override
-  void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
-    super.onError(bloc, error, stackTrace);
-    print(error);
-  }
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  Bloc.observer = SimpleBlocObserver();
 
   final dio = Dio();
   final userRepository = UserRepository(dio: dio);
@@ -78,7 +56,7 @@ class MyApp extends StatelessWidget {
   final BikeRepository bikeRepository;
   final RentalRepository rentalRepository;
 
-  MyApp(
+  const MyApp(
       {Key? key,
       required this.userRepository,
       required this.dockRepository,

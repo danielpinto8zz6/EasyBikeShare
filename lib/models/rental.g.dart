@@ -7,15 +7,15 @@ part of 'rental.dart';
 // **************************************************************************
 
 Rental _$RentalFromJson(Map<String, dynamic> json) => Rental(
-      json['id'] as String?,
-      json['dockId'] as String,
-      json['bikeId'] as String,
-      json['username'] as String,
-      json['status'] as int?,
-      json['startDate'] == null
+      id: json['id'] as String?,
+      dockId: json['dockId'] as String?,
+      bikeId: json['bikeId'] as String,
+      username: json['username'] as String?,
+      status: json['status'] as int?,
+      startDate: json['startDate'] == null
           ? null
           : DateTime.parse(json['startDate'] as String),
-      json['endDate'] == null
+      endDate: json['endDate'] == null
           ? null
           : DateTime.parse(json['endDate'] as String),
     );

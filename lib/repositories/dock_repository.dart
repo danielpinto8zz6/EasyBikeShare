@@ -25,7 +25,6 @@ class DockRepository {
 
       return docks;
     } else {
-      // TODO: handle error
       return <Dock>[];
     }
   }

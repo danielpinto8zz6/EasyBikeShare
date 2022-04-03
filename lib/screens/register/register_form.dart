@@ -10,17 +10,14 @@ import 'package:easybikeshare/style/colors.dart' as Style;
 class RegisterForm extends StatefulWidget {
   final UserRepository userRepository;
 
-  RegisterForm({Key? key, required this.userRepository}) : super(key: key);
+  const RegisterForm({Key? key, required this.userRepository})
+      : super(key: key);
 
   @override
-  State<RegisterForm> createState() => _RegisterFormState(userRepository);
+  State<RegisterForm> createState() => _RegisterFormState();
 }
 
 class _RegisterFormState extends State<RegisterForm> {
-  final UserRepository userRepository;
-
-  _RegisterFormState(this.userRepository);
-
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -39,7 +36,7 @@ class _RegisterFormState extends State<RegisterForm> {
       listener: (context, state) {
         if (state is RegisterFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text("Register failed."),
               backgroundColor: Colors.red,
             ),
@@ -55,10 +52,10 @@ class _RegisterFormState extends State<RegisterForm> {
                 children: [
                   Container(
                       height: 200.0,
-                      padding: EdgeInsets.only(bottom: 20.0, top: 40.0),
+                      padding: const EdgeInsets.only(bottom: 20.0, top: 40.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: const [
                           Text(
                             "BIKESHARE",
                             style: TextStyle(
@@ -76,44 +73,45 @@ class _RegisterFormState extends State<RegisterForm> {
                           )
                         ],
                       )),
-                  SizedBox(
+                  const SizedBox(
                     height: 30.0,
                   ),
                   TextFormField(
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 14.0,
                         color: Style.Colors.titleColor,
                         fontWeight: FontWeight.bold),
                     controller: _usernameController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                      prefixIcon:
-                          Icon(EvaIcons.emailOutline, color: Colors.black26),
+                      prefixIcon: const Icon(EvaIcons.emailOutline,
+                          color: Colors.black26),
                       enabledBorder: OutlineInputBorder(
-                          borderSide: new BorderSide(color: Colors.black12),
+                          borderSide: const BorderSide(color: Colors.black12),
                           borderRadius: BorderRadius.circular(30.0)),
                       focusedBorder: OutlineInputBorder(
                           borderSide:
-                              new BorderSide(color: Style.Colors.mainColor),
+                              const BorderSide(color: Style.Colors.mainColor),
                           borderRadius: BorderRadius.circular(30.0)),
-                      contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
+                      contentPadding:
+                          const EdgeInsets.only(left: 10.0, right: 10.0),
                       labelText: "Username",
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                           fontSize: 12.0,
                           color: Style.Colors.grey,
                           fontWeight: FontWeight.w500),
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                           fontSize: 12.0,
                           color: Colors.grey,
                           fontWeight: FontWeight.w500),
                     ),
                     autocorrect: false,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20.0,
                   ),
                   TextFormField(
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 14.0,
                         color: Style.Colors.titleColor,
                         fontWeight: FontWeight.bold),
@@ -121,24 +119,25 @@ class _RegisterFormState extends State<RegisterForm> {
                     keyboardType: TextInputType.visiblePassword,
                     decoration: InputDecoration(
                       fillColor: Colors.white,
-                      prefixIcon: Icon(
+                      prefixIcon: const Icon(
                         EvaIcons.lockOutline,
                         color: Colors.black26,
                       ),
                       enabledBorder: OutlineInputBorder(
-                          borderSide: new BorderSide(color: Colors.black12),
+                          borderSide: const BorderSide(color: Colors.black12),
                           borderRadius: BorderRadius.circular(30.0)),
                       focusedBorder: OutlineInputBorder(
                           borderSide:
-                              new BorderSide(color: Style.Colors.mainColor),
+                              const BorderSide(color: Style.Colors.mainColor),
                           borderRadius: BorderRadius.circular(30.0)),
-                      contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
+                      contentPadding:
+                          const EdgeInsets.only(left: 10.0, right: 10.0),
                       labelText: "Password",
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                           fontSize: 12.0,
                           color: Style.Colors.grey,
                           fontWeight: FontWeight.w500),
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                           fontSize: 12.0,
                           color: Colors.grey,
                           fontWeight: FontWeight.w500),
@@ -146,21 +145,19 @@ class _RegisterFormState extends State<RegisterForm> {
                     autocorrect: false,
                     obscureText: true,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30.0,
                   ),
-                  Align(
+                  const Align(
                     alignment: Alignment.centerRight,
-                    child: new InkWell(
-                        child: new Text(
-                          "Forget password?",
-                          style:
-                              TextStyle(color: Colors.black45, fontSize: 12.0),
-                        ),
-                        onTap: () {}),
+                    child: InkWell(
+                        child: Text(
+                      "Forget password?",
+                      style: TextStyle(color: Colors.black45, fontSize: 12.0),
+                    )),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 30.0, bottom: 20.0),
+                    padding: const EdgeInsets.only(top: 30.0, bottom: 20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
@@ -176,7 +173,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                           child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                        children: [
+                                        children: const [
                                           SizedBox(
                                             height: 25.0,
                                             width: 25.0,
@@ -188,34 +185,34 @@ class _RegisterFormState extends State<RegisterForm> {
                                   )
                                 : ElevatedButton(
                                     onPressed: _onRegisterButtonPressed,
-                                    child: Text("REGISTER",
-                                        style: new TextStyle(
+                                    child: const Text("REGISTER",
+                                        style: TextStyle(
                                             fontSize: 12.0,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white)))),
                       ],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20.0,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 40.0,
                   ),
                   Expanded(
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: Container(
-                          padding: EdgeInsets.only(bottom: 30.0),
+                          padding: const EdgeInsets.only(bottom: 30.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              Text(
+                              const Text(
                                 "Already have an account?",
                                 style: TextStyle(color: Style.Colors.grey),
                               ),
-                              Padding(
+                              const Padding(
                                 padding: EdgeInsets.only(right: 5.0),
                               ),
                               GestureDetector(
@@ -228,7 +225,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                         RedirectedToLogin(),
                                       );
                                     },
-                                    child: Text(
+                                    child: const Text(
                                       "Login",
                                       style: TextStyle(
                                           color: Style.Colors.mainColor,
@@ -239,7 +236,7 @@ class _RegisterFormState extends State<RegisterForm> {
                           )),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20.0,
                   )
                 ],
