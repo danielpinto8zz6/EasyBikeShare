@@ -17,12 +17,16 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       emit(RegisterLoading());
 
       try {
-        await userRepository.register(
+        var isRegistered = await userRepository.register(
           event.username,
           event.password,
         );
 
-        authenticationBloc.add(Registered());
+        if (isRegistered) {
+          authenticationBloc.add(Login());
+        } else {
+          throw Error();
+        }
       } catch (error) {
         emit(RegisterFailure(error: error.toString()));
       }

@@ -9,9 +9,13 @@ class AuthenticationBloc
   AuthenticationBloc({required this.userRepository})
       : super(AuthenticationUninitialized()) {
     on<AppStarted>((event, emit) async {
-      final bool hasToken = await userRepository.hasToken();
-      if (hasToken) {
-        emit(AuthenticationAuthenticated());
+      var token = await userRepository.getToken();
+      var username = await userRepository.getUsername();
+
+      var isValid = token != null && username != null;
+
+      if (isValid) {
+        emit(AuthenticationAuthenticated(username: username, token: token));
       } else {
         emit(AuthenticationUnauthenticated());
       }
@@ -21,7 +25,8 @@ class AuthenticationBloc
       emit(AuthenticationLoading());
       await userRepository.persistToken(event.token);
       await userRepository.persistUsername(event.username);
-      emit(AuthenticationAuthenticated());
+      emit(AuthenticationAuthenticated(
+          username: event.username, token: event.token));
     });
 
     on<LoggedOut>((event, emit) async {
@@ -31,16 +36,8 @@ class AuthenticationBloc
       emit(AuthenticationUnauthenticated());
     });
 
-    on<RedirectedToRegister>((event, emit) async {
-      emit(RedirectingToRegister());
-    });
+    on<Register>((event, emit) => emit(Registering()));
 
-    on<RedirectedToLogin>((event, emit) async {
-      emit(RedirectingToLogin());
-    });
-
-    on<Registered>((event, emit) async {
-      emit(RedirectingToLogin());
-    });
+    on<Login>((event, emit) => emit(LogingIn()));
   }
 }

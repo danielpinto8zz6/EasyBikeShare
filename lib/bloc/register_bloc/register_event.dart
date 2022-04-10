@@ -20,11 +20,3 @@ class RegisterButtonPressed extends RegisterEvent {
   String toString() =>
       'RegisterButtonPressed { username: $username, password: $password }';
 }
-
-class RedirectLoginButtonPressed extends RegisterEvent {
-  @override
-  String toString() => 'RedirectLoginButtonPressed';
-
-  @override
-  List<Object?> get props => [];
-}

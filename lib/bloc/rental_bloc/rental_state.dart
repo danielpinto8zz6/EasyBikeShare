@@ -16,3 +16,15 @@ class RentalLoaded extends RentalState {
 
   const RentalLoaded(this.rental);
 }
+
+class BikeValidated extends RentalState {}
+
+class BikeReserved extends RentalState {}
+
+class BikeUnlocked extends RentalState {}
+
+class BikeValidationFailed extends RentalState {}
+
+class BikeReservationFailed extends RentalState {}
+
+class BikeUnlockFailed extends RentalState {}

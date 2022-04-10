@@ -5,59 +5,45 @@ import 'package:easybikeshare/repositories/token_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-Future<void> onBackgroundMessage(RemoteMessage message) async {
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
-
-  if (message.data.containsKey('data')) {
-    // Handle data message
-    final data = message.data['data'];
-  }
-
-  if (message.data.containsKey('notification')) {
-    // Handle notification message
-    final notification = message.data['notification'];
-  }
-  // Or do other work.
+  print('Handling a background message ${message.messageId}');
 }
 
 class FCM {
   final _firebaseMessaging = FirebaseMessaging.instance;
 
   final streamCtlr = StreamController<String>.broadcast();
-  final titleCtlr = StreamController<String>.broadcast();
-  final bodyCtlr = StreamController<String>.broadcast();
+  final eventCtlr = StreamController<String>.broadcast();
 
   final UserRepository userRepository;
   final TokenRepository tokenRepository;
 
   FCM({required this.userRepository, required this.tokenRepository});
 
-  setNotifications() {
-    FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
+  setNotifications() async {
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     FirebaseMessaging.onMessage.listen(
       (message) async {
-        if (message.data.containsKey('data')) {
-          // Handle data message
-          streamCtlr.sink.add(message.data['data']);
+        streamCtlr.sink.add("message received");
+        if (message.data.containsKey('event')) {
+          eventCtlr.sink.add(message.data["event"]);
         }
-        if (message.data.containsKey('notification')) {
-          // Handle notification message
-          streamCtlr.sink.add(message.data['notification']);
-        }
-        // Or do other work.
-        titleCtlr.sink.add(message.notification!.title!);
-        bodyCtlr.sink.add(message.notification!.body!);
       },
     );
+  }
+
+  setToken(username) {
     // With this token you can test it easily on your phone
-    _firebaseMessaging.getToken().then((token) => userRepository
-        .getUsername()
-        .then((username) => tokenRepository.setToken(username!, token!)));
+    _firebaseMessaging
+        .getToken()
+        .then((token) => tokenRepository.setToken(username!, token!));
   }
 
   dispose() {
     streamCtlr.close();
-    bodyCtlr.close();
-    titleCtlr.close();
   }
 }

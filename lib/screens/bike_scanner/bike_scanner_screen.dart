@@ -1,3 +1,4 @@
+import 'package:easybikeshare/notification.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/screens/rental/rental_screen.dart';
 import 'package:flutter/material.dart';
@@ -5,8 +6,12 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 class BikeScannerScreen extends StatefulWidget {
   final RentalRepository rentalRepository;
+  final FCM firebaseMessaging;
 
-  const BikeScannerScreen({Key? key, required this.rentalRepository})
+  const BikeScannerScreen(
+      {Key? key,
+      required this.rentalRepository,
+      required this.firebaseMessaging})
       : super(key: key);
 
   @override
@@ -40,6 +45,7 @@ class _BikeScannerState extends State<BikeScannerScreen> {
                     builder: (context) => RentalScreen(
                       bikeId: barcode.rawValue!,
                       rentalRepository: widget.rentalRepository,
+                      firebaseMessaging: widget.firebaseMessaging,
                     ),
                   ));
                 }),

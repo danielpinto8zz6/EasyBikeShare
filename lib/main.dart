@@ -3,18 +3,16 @@ import 'package:easybikeshare/repositories/bike_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/token_repository.dart';
 import 'package:easybikeshare/screens/auth/login_screen.dart';
-import 'package:easybikeshare/screens/near_by_docks/near_by_docks_screen.dart';
-import 'package:easybikeshare/screens/register/register_screen.dart';
+import 'package:easybikeshare/screens/main/main_screen.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
-import 'package:easybikeshare/style/colors.dart' as Style;
+import 'package:easybikeshare/screens/register/register_screen.dart';
 import 'package:easybikeshare/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'bloc/auth_bloc/auth.dart';
+import 'notification.dart';
 import 'repositories/user_repository.dart';
-import 'screens/auth/intro_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,9 +25,9 @@ Future<void> main() async {
   final bikeRepository = BikeRepository(dio: dio);
   final rentalRepository = RentalRepository(dio: dio);
 
-  var token = await userRepository.getToken() ?? "";
-  dio.options.headers["Authorization"] = "Bearer " + token;
-  dio.options.headers["Accept"] = "*/*";
+  final firebaseMessaging =
+      FCM(userRepository: userRepository, tokenRepository: tokenRepository);
+  firebaseMessaging.setNotifications();
 
   runApp(
     BlocProvider<AuthenticationBloc>(
@@ -43,7 +41,9 @@ Future<void> main() async {
         tokenRepository: tokenRepository,
         bikeRepository: bikeRepository,
         rentalRepository: rentalRepository,
-        key: null,
+        firebaseMessaging: firebaseMessaging,
+        dio: dio,
+        key: const Key("bikeshare"),
       ),
     ),
   );
@@ -55,6 +55,8 @@ class MyApp extends StatelessWidget {
   final TokenRepository tokenRepository;
   final BikeRepository bikeRepository;
   final RentalRepository rentalRepository;
+  final FCM firebaseMessaging;
+  final Dio dio;
 
   const MyApp(
       {Key? key,
@@ -62,57 +64,43 @@ class MyApp extends StatelessWidget {
       required this.dockRepository,
       required this.tokenRepository,
       required this.bikeRepository,
-      required this.rentalRepository});
+      required this.rentalRepository,
+      required this.firebaseMessaging,
+      required this.dio})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      locale: const Locale('mn', 'MN'),
       theme: AppTheme.lightTheme,
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
           if (state is AuthenticationAuthenticated) {
-            return NearByDocksScreen(
+            firebaseMessaging.setToken(state.username);
+
+            dio.options.headers["Authorization"] = "Bearer " + state.token;
+            dio.options.headers["Accept"] = "*/*";
+
+            return MainScreen(
               dockRepository: dockRepository,
               userRepository: userRepository,
               tokenRepository: tokenRepository,
               bikeRepository: bikeRepository,
               rentalRepository: rentalRepository,
-            );
-          }
-          if (state is AuthenticationUnauthenticated) {
-            return IntroPage(userRepository: userRepository);
-          }
-          if (state is AuthenticationLoading) {
-            return Scaffold(
-              body: Container(
-                color: Colors.white,
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
-                    SizedBox(
-                      height: 25.0,
-                      width: 25.0,
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            Style.Colors.mainColor),
-                        strokeWidth: 4.0,
-                      ),
-                    )
-                  ],
-                ),
-              ),
+              firebaseMessaging: firebaseMessaging,
             );
           }
 
-          if (state is RedirectingToRegister) {
+          if (state is AuthenticationUnauthenticated) {
+            return LoginScreen(userRepository: userRepository);
+          }
+
+          if (state is Registering) {
             return RegisterScreen(userRepository: userRepository);
           }
 
-          if (state is RedirectingToLogin) {
+          if (state is LogingIn) {
             return LoginScreen(userRepository: userRepository);
           }
 
@@ -128,8 +116,8 @@ class MyApp extends StatelessWidget {
                     height: 25.0,
                     width: 25.0,
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(Style.Colors.mainColor),
+                      // valueColor:
+                      //     AlwaysStoppedAnimation<Color>(Style.Colors.mainColor),
                       strokeWidth: 4.0,
                     ),
                   )

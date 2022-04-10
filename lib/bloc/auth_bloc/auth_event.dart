@@ -24,8 +24,6 @@ class LoggedIn extends AuthenticationEvent {
 
 class LoggedOut extends AuthenticationEvent {}
 
-class RedirectedToRegister extends AuthenticationEvent {}
+class Register extends AuthenticationEvent {}
 
-class RedirectedToLogin extends AuthenticationEvent {}
-
-class Registered extends AuthenticationEvent {}
+class Login extends AuthenticationEvent {}

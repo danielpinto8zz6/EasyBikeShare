@@ -1,11 +1,14 @@
-import 'package:easybikeshare/bloc/auth_bloc/auth.dart';
+import 'dart:async';
+
+import 'package:easybikeshare/bloc/auth_bloc/auth_bloc.dart';
+import 'package:easybikeshare/bloc/auth_bloc/auth_event.dart';
 import 'package:easybikeshare/bloc/register_bloc/register_bloc.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:easybikeshare/screens/auth/login_screen.dart';
+import 'package:easybikeshare/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:easybikeshare/style/colors.dart' as Style;
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class RegisterForm extends StatefulWidget {
   final UserRepository userRepository;
@@ -20,16 +23,24 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _passwordConfirmationController = TextEditingController();
+  final _registerButtonController = RoundedLoadingButtonController();
 
   @override
   Widget build(BuildContext context) {
     _onRegisterButtonPressed() {
-      BlocProvider.of<RegisterBloc>(context).add(
-        RegisterButtonPressed(
-          username: _usernameController.text,
-          password: _passwordController.text,
-        ),
-      );
+      if (_usernameController.text.isNotEmpty &&
+          _passwordController.text.isNotEmpty &&
+          _passwordController.text == _passwordConfirmationController.text) {
+        _registerButtonController.reset();
+        _registerButtonController.start();
+        BlocProvider.of<RegisterBloc>(context).add(
+          RegisterButtonPressed(
+            username: _usernameController.text,
+            password: _passwordController.text,
+          ),
+        );
+      }
     }
 
     return BlocListener<RegisterBloc, RegisterState>(
@@ -41,204 +52,151 @@ class _RegisterFormState extends State<RegisterForm> {
               backgroundColor: Colors.red,
             ),
           );
+
+          _registerButtonController.error();
+
+          Timer(const Duration(seconds: 4), () {
+            _registerButtonController.reset();
+          });
+        }
+
+        if (state is Registered) {
+          _registerButtonController.success();
+
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => LoginScreen(
+                    userRepository: widget.userRepository,
+                  )));
         }
       },
       child: BlocBuilder<RegisterBloc, RegisterState>(
         builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 20.0, left: 20.0, top: 80.0),
-            child: Form(
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24.0, 40.0, 24.0, 0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                      height: 200.0,
-                      padding: const EdgeInsets.only(bottom: 20.0, top: 40.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text(
-                            "BIKESHARE",
-                            style: TextStyle(
-                                color: Style.Colors.mainColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24.0),
-                          ),
-                          SizedBox(
-                            height: 5.0,
-                          ),
-                          Text(
-                            "Rent a bike, from anywhere, to anywhere",
-                            style: TextStyle(
-                                fontSize: 10.0, color: Colors.black38),
-                          )
-                        ],
-                      )),
-                  const SizedBox(
-                    height: 30.0,
-                  ),
-                  TextFormField(
-                    style: const TextStyle(
-                        fontSize: 14.0,
-                        color: Style.Colors.titleColor,
-                        fontWeight: FontWeight.bold),
-                    controller: _usernameController,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(EvaIcons.emailOutline,
-                          color: Colors.black26),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.black12),
-                          borderRadius: BorderRadius.circular(30.0)),
-                      focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: Style.Colors.mainColor),
-                          borderRadius: BorderRadius.circular(30.0)),
-                      contentPadding:
-                          const EdgeInsets.only(left: 10.0, right: 10.0),
-                      labelText: "Username",
-                      hintStyle: const TextStyle(
-                          fontSize: 12.0,
-                          color: Style.Colors.grey,
-                          fontWeight: FontWeight.w500),
-                      labelStyle: const TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    autocorrect: false,
-                  ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  TextFormField(
-                    style: const TextStyle(
-                        fontSize: 14.0,
-                        color: Style.Colors.titleColor,
-                        fontWeight: FontWeight.bold),
-                    controller: _passwordController,
-                    keyboardType: TextInputType.visiblePassword,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      prefixIcon: const Icon(
-                        EvaIcons.lockOutline,
-                        color: Colors.black26,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Register new\naccount',
+                        style: heading2.copyWith(color: textBlack),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.black12),
-                          borderRadius: BorderRadius.circular(30.0)),
-                      focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: Style.Colors.mainColor),
-                          borderRadius: BorderRadius.circular(30.0)),
-                      contentPadding:
-                          const EdgeInsets.only(left: 10.0, right: 10.0),
-                      labelText: "Password",
-                      hintStyle: const TextStyle(
-                          fontSize: 12.0,
-                          color: Style.Colors.grey,
-                          fontWeight: FontWeight.w500),
-                      labelStyle: const TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    autocorrect: false,
-                    obscureText: true,
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Image.asset(
+                        'assets/images/accent.png',
+                        width: 99,
+                        height: 4,
+                      ),
+                    ],
                   ),
                   const SizedBox(
-                    height: 30.0,
+                    height: 48,
                   ),
-                  const Align(
-                    alignment: Alignment.centerRight,
-                    child: InkWell(
-                        child: Text(
-                      "Forget password?",
-                      style: TextStyle(color: Colors.black45, fontSize: 12.0),
-                    )),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 30.0, bottom: 20.0),
+                  Form(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        SizedBox(
-                            height: 45,
-                            child: state is RegisterLoading
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Center(
-                                          child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: const [
-                                          SizedBox(
-                                            height: 25.0,
-                                            width: 25.0,
-                                            child: CupertinoActivityIndicator(),
-                                          )
-                                        ],
-                                      ))
-                                    ],
-                                  )
-                                : ElevatedButton(
-                                    onPressed: _onRegisterButtonPressed,
-                                    child: const Text("REGISTER",
-                                        style: TextStyle(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white)))),
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: textWhiteGrey,
+                            borderRadius: BorderRadius.circular(14.0),
+                          ),
+                          child: TextFormField(
+                            controller: _usernameController,
+                            decoration: InputDecoration(
+                              hintText: 'Username',
+                              hintStyle: heading6.copyWith(color: textGrey),
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 32,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: textWhiteGrey,
+                            borderRadius: BorderRadius.circular(14.0),
+                          ),
+                          child: TextFormField(
+                            obscureText: true,
+                            controller: _passwordController,
+                            decoration: InputDecoration(
+                              hintText: 'Password',
+                              hintStyle: heading6.copyWith(color: textGrey),
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 32,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: textWhiteGrey,
+                            borderRadius: BorderRadius.circular(14.0),
+                          ),
+                          child: TextFormField(
+                            controller: _passwordConfirmationController,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              hintText: 'Password Confirmation',
+                              hintStyle: heading6.copyWith(color: textGrey),
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(
-                    height: 20.0,
+                    height: 32,
+                  ),
+                  RoundedLoadingButton(
+                    animateOnTap: false,
+                    color: primaryBlue,
+                    controller: _registerButtonController,
+                    onPressed: () => _onRegisterButtonPressed(),
+                    elevation: 0,
+                    height: 56,
+                    width: MediaQuery.of(context).size.width,
+                    borderRadius: 14.0,
+                    child: Text('Register',
+                        style: heading5.copyWith(color: Colors.white)),
                   ),
                   const SizedBox(
-                    height: 40.0,
+                    height: 50,
                   ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                          padding: const EdgeInsets.only(bottom: 30.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              const Text(
-                                "Already have an account?",
-                                style: TextStyle(color: Style.Colors.grey),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.only(right: 5.0),
-                              ),
-                              GestureDetector(
-                                onTap: () {},
-                                child: TextButton(
-                                    onPressed: () {
-                                      BlocProvider.of<AuthenticationBloc>(
-                                              context)
-                                          .add(
-                                        RedirectedToLogin(),
-                                      );
-                                    },
-                                    child: const Text(
-                                      "Login",
-                                      style: TextStyle(
-                                          color: Style.Colors.mainColor,
-                                          fontWeight: FontWeight.bold),
-                                    )),
-                              ),
-                            ],
-                          )),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Already have an account? ",
+                        style: regular16pt.copyWith(color: textGrey),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          BlocProvider.of<AuthenticationBloc>(context).add(
+                            Login(),
+                          );
+                        },
+                        child: Text(
+                          'Login',
+                          style: regular16pt.copyWith(color: primaryBlue),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(
-                    height: 20.0,
-                  )
                 ],
               ),
             ),

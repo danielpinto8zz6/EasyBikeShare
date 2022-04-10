@@ -24,7 +24,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
         authenticationBloc
             .add(LoggedIn(token: token, username: event.username));
-        emit(LoginInitial());
+        emit(LoginSuccess());
       } catch (error) {
         emit(LoginFailure(error: error.toString()));
       }

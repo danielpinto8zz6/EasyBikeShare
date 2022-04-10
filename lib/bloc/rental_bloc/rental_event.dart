@@ -15,3 +15,12 @@ class LoadRental extends RentalEvent {
   @override
   List<Object> get props => [bikeId];
 }
+
+class RentalEventReceived extends RentalEvent {
+  final String event;
+
+  const RentalEventReceived(this.event);
+
+  @override
+  List<Object> get props => [event];
+}
