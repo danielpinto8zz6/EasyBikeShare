@@ -3,10 +3,11 @@ import 'package:easybikeshare/repositories/bike_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/token_repository.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
-import 'package:easybikeshare/screens/account/account_screen.dart';
+import 'package:easybikeshare/screens/account/profile_screen.dart';
 import 'package:easybikeshare/screens/bike_scanner/bike_scanner_screen.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
 import 'package:easybikeshare/screens/near_by_docks/near_by_docks_screen.dart';
+import 'package:easybikeshare/screens/rental/rental_history_screen.dart';
 import 'package:easybikeshare/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -49,18 +50,24 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: FloatingActionButton.extended(
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => BikeScannerScreen(
-                  rentalRepository: widget.rentalRepository,
-                  firebaseMessaging: widget.firebaseMessaging,
-                ),
-              ));
-            },
-            label: const Text("Scan"),
-            icon: const Icon(Icons.document_scanner),
-            backgroundColor: primaryBlue),
+        floatingActionButton: Visibility(
+            visible: _currentIndex == 0,
+            child: SizedBox(
+              height: 50.0,
+              // width: 50.0,
+              child: FloatingActionButton.extended(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => BikeScannerScreen(
+                        rentalRepository: widget.rentalRepository,
+                        firebaseMessaging: widget.firebaseMessaging,
+                      ),
+                    ));
+                  },
+                  label: const Text("Scan"),
+                  icon: const Icon(Icons.document_scanner),
+                  backgroundColor: primaryBlue),
+            )),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         bottomNavigationBar: SalomonBottomBar(
           currentIndex: _currentIndex,
@@ -74,8 +81,8 @@ class _MainScreenState extends State<MainScreen> {
             ),
 
             SalomonBottomBarItem(
-              icon: const Icon(Icons.search),
-              title: const Text("Search"),
+              icon: const Icon(Icons.bike_scooter),
+              title: const Text("Rentals"),
               selectedColor: primaryBlue,
             ),
 
@@ -101,9 +108,9 @@ class _MainScreenState extends State<MainScreen> {
             rentalRepository: widget.rentalRepository,
             firebaseMessaging: widget.firebaseMessaging);
       case 1:
-        return const Text("Error");
+        return RentalHistoryScreen(rentalRepository: widget.rentalRepository);
       case 2:
-        return AccountScreen(userRepository: widget.userRepository);
+        return ProfileScreen(userRepository: widget.userRepository);
       default:
         return const Text("Error");
     }

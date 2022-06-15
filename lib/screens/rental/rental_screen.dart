@@ -51,6 +51,11 @@ class _RentalScreenState extends State<RentalScreen> {
                           ),
                         ));
                   }
+                  if (state is BikeValidated) {}
+                  if (state is BikeUnlocked) {}
+                  if (state is BikeValidationFailed) {}
+                  if (state is BikeUnlockFailed) {}
+                  if (state is BikeReservationFailed) {}
 
                   return Container(
                       height: 500,

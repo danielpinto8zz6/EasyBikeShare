@@ -12,6 +12,7 @@ import 'package:easybikeshare/repositories/token_repository.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
 import 'package:easybikeshare/screens/bike_scanner/bike_scanner_screen.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
+import 'package:easybikeshare/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -132,10 +133,11 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
               ),
               Positioned(
                 left: 20,
-                bottom: 20,
-                height: 35,
-                width: 35,
+                bottom: 15,
+                height: 50,
+                width: 50,
                 child: FloatingActionButton(
+                  backgroundColor: primaryBlue,
                   onPressed: () {
                     // Automatically center the location marker on the map when location updated until user interact with the map.
                     setState(() => _centerOnLocationUpdate =

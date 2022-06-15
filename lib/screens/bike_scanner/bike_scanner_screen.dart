@@ -2,6 +2,7 @@ import 'package:easybikeshare/notification.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/screens/rental/rental_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class BikeScannerScreen extends StatefulWidget {
@@ -29,38 +30,63 @@ class _BikeScannerState extends State<BikeScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text("Scan bike code"),
+        foregroundColor: Colors.black,
+      ),
+      backgroundColor: Colors.white,
       body: Builder(builder: (context) {
         return Stack(
           children: [
-            MobileScanner(
-                controller: controller,
-                fit: BoxFit.contain,
-                onDetect: (barcode, args) {
-                  setState(() {
-                    this.barcode = barcode.rawValue;
-                  });
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => RentalScreen(
-                      bikeId: barcode.rawValue!,
-                      rentalRepository: widget.rentalRepository,
-                      firebaseMessaging: widget.firebaseMessaging,
-                    ),
-                  ));
-                }),
+            const Align(
+                alignment: Alignment.topCenter,
+                child: Image(
+                  image: AssetImage('assets/images/qr-code.png'),
+                  width: 75,
+                  height: 75,
+                )),
+            Align(
+              alignment: Alignment.center,
+              child: FittedBox(
+                  child: MobileScanner(
+                      controller: controller,
+                      fit: BoxFit.contain,
+                      onDetect: (barcode, args) {
+                        setState(() {
+                          this.barcode = barcode.rawValue;
+                        });
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => RentalScreen(
+                            bikeId: barcode.rawValue!,
+                            rentalRepository: widget.rentalRepository,
+                            firebaseMessaging: widget.firebaseMessaging,
+                          ),
+                        ));
+                      })),
+            ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
                 alignment: Alignment.bottomCenter,
                 height: 100,
-                color: Colors.black.withOpacity(0.4),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     IconButton(
-                      color: Colors.white,
+                      color: Colors.black,
                       icon: ValueListenableBuilder(
                         valueListenable: controller.torchState,
                         builder: (context, state, child) {
@@ -70,31 +96,16 @@ class _BikeScannerState extends State<BikeScannerScreen> {
                                   color: Colors.grey);
                             case TorchState.on:
                               return const Icon(Icons.flash_on,
-                                  color: Colors.yellow);
+                                  color: Colors.black);
                           }
                         },
                       ),
                       iconSize: 32.0,
                       onPressed: () => controller.toggleTorch(),
-                    ),
-                    Center(
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width - 200,
-                        height: 50,
-                        child: FittedBox(
-                          child: Text(
-                            barcode ?? 'Scan something!',
-                            overflow: TextOverflow.fade,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline4!
-                                .copyWith(color: Colors.white),
-                          ),
-                        ),
-                      ),
+                      padding: const EdgeInsets.all(50),
                     ),
                     IconButton(
-                      color: Colors.white,
+                      color: Colors.black,
                       icon: ValueListenableBuilder(
                         valueListenable: controller.cameraFacingState,
                         builder: (context, state, child) {
@@ -108,6 +119,7 @@ class _BikeScannerState extends State<BikeScannerScreen> {
                       ),
                       iconSize: 32.0,
                       onPressed: () => controller.switchCamera(),
+                      padding: const EdgeInsets.all(50),
                     ),
                   ],
                 ),

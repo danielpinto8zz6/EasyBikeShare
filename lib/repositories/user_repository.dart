@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:easybikeshare/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepository {
   static String mainUrl = "http://192.168.1.199:8099/api";
   var authUrl = '$mainUrl/auth';
   var registerUrl = '$mainUrl/users';
+  var userUrl = '$mainUrl/users/';
 
   final Dio dio;
 
@@ -75,5 +77,19 @@ class UserRepository {
     final prefs = await SharedPreferences.getInstance();
 
     return prefs.getString('username');
+  }
+
+  Future<User> getUserByUsername(String username) async {
+    try {
+      Response response = await dio.get(userUrl + username);
+
+      if (response.data != null) {
+        return User.fromJson(response.data);
+      } else {
+        throw Exception();
+      }
+    } catch (error) {
+      throw Exception();
+    }
   }
 }
