@@ -23,7 +23,8 @@ Future<void> main() async {
   final dockRepository = DockRepository(dio: dio);
   final tokenRepository = TokenRepository(dio: dio);
   final bikeRepository = BikeRepository(dio: dio);
-  final rentalRepository = RentalRepository(dio: dio);
+  final rentalRepository =
+      RentalRepository(dio: dio, dockRepository: dockRepository);
 
   final firebaseMessaging =
       FCM(userRepository: userRepository, tokenRepository: tokenRepository);

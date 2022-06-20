@@ -5,6 +5,7 @@ import 'package:easybikeshare/models/dock.dart';
 class DockRepository {
   static String mainUrl = "http://192.168.1.199:8099/api";
   var nearByBikesUrl = '$mainUrl/docks/nearby';
+  var getByBikeIdUrl = '$mainUrl/docks/bike/';
 
   final Dio dio;
 
@@ -26,6 +27,18 @@ class DockRepository {
       return docks;
     } else {
       return <Dock>[];
+    }
+  }
+
+  Future<Dock?> getDockByBikeId(String bikeId) async {
+    Response response = await dio.get(getByBikeIdUrl + bikeId);
+
+    if (response.data != null) {
+      Dock dock = Dock.fromJson(response.data);
+
+      return dock;
+    } else {
+      return null;
     }
   }
 }

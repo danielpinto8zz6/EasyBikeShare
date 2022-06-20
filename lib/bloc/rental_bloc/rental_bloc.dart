@@ -20,9 +20,7 @@ class RentalBloc extends Bloc<RentalEvent, RentalState> {
 
   RentalBloc(this.rentalRepository) : super(RentalInitial()) {
     on<LoadRental>((event, emit) async {
-      var request = Rental(bikeId: event.bikeId);
-
-      var result = await rentalRepository.createRental(request);
+      var result = await rentalRepository.createRental(event.bikeId, null);
 
       emit(RentalLoaded(result));
     });
