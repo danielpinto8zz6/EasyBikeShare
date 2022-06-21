@@ -11,10 +11,10 @@ class RentalInitial extends RentalState {}
 
 class RentalLoading extends RentalState {}
 
-class RentalLoaded extends RentalState {
+class RentalAccepted extends RentalState {
   final Rental rental;
 
-  const RentalLoaded(this.rental);
+  const RentalAccepted(this.rental);
 }
 
 class BikeValidated extends RentalState {}
