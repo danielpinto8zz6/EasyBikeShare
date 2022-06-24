@@ -4,12 +4,13 @@ part 'credit_card.g.dart';
 
 @JsonSerializable()
 class CreditCard {
-  final String number;
-  final String name;
-  final String code;
-  final DateTime validity;
+  String cardNumber;
+  String cardHolderName;
+  String cvvCode;
+  String expiryDate;
 
-  CreditCard(this.number, this.name, this.code, this.validity);
+  CreditCard(
+      this.cardNumber, this.cardHolderName, this.cvvCode, this.expiryDate);
 
   factory CreditCard.fromJson(Map<String, dynamic> json) =>
       _$CreditCardFromJson(json);

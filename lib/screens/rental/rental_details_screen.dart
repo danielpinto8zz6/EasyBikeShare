@@ -2,6 +2,7 @@ import 'package:date_format/date_format.dart';
 import 'package:easybikeshare/bloc/rental_details_bloc/rental_details_bloc.dart';
 import 'package:easybikeshare/models/rental.dart';
 import 'package:easybikeshare/repositories/payment_repository.dart';
+import 'package:easybikeshare/repositories/travel_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -10,9 +11,13 @@ import 'package:latlong2/latlong.dart';
 class RentalDetailsScreen extends StatefulWidget {
   final Rental rental;
   final PaymentRepository paymentRepository;
+  final TravelRepository travelRepository;
 
   const RentalDetailsScreen(
-      {Key? key, required this.rental, required this.paymentRepository})
+      {Key? key,
+      required this.rental,
+      required this.paymentRepository,
+      required this.travelRepository})
       : super(key: key);
 
   @override
@@ -20,6 +25,30 @@ class RentalDetailsScreen extends StatefulWidget {
 }
 
 class _RentalDetailsState extends State<RentalDetailsScreen> {
+  late Future<List<Polyline>> polylines;
+
+  Future<List<Polyline>> getPolylines() async {
+    var polyLines = [
+      Polyline(
+        points: [
+          LatLng(50.5, -0.09),
+          LatLng(51.3498, -6.2603),
+          LatLng(53.8566, 2.3522),
+        ],
+        strokeWidth: 4.0,
+        color: Colors.amber,
+      ),
+    ];
+    await Future.delayed(const Duration(seconds: 3));
+    return polyLines;
+  }
+
+  @override
+  void initState() {
+    polylines = getPolylines();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +64,8 @@ class _RentalDetailsState extends State<RentalDetailsScreen> {
         ),
         backgroundColor: Colors.white,
         body: BlocProvider(create: (context) {
-          return RentalDetailsBloc(widget.paymentRepository)
+          return RentalDetailsBloc(
+              widget.paymentRepository, widget.travelRepository)
             ..add(LoadRentalDetails(widget.rental.id));
         }, child: BlocBuilder<RentalDetailsBloc, RentalDetailsState>(
             builder: (context, state) {
@@ -53,24 +83,34 @@ class _RentalDetailsState extends State<RentalDetailsScreen> {
                     [yyyy, '/', mm, '/', dd, ' ', hh, ':', mm])
                 : 'unknown';
 
+            var points = state.travelEvents
+                .map((x) =>
+                    LatLng(x.coordinates.latitude, x.coordinates.longitude))
+                .toList();
+
             return Builder(builder: (context) {
               return Column(children: [
                 Container(
-                    // here
-                    height: 400,
-                    alignment: Alignment.centerLeft,
-                    child: FlutterMap(
-                      options: MapOptions(
-                        center: LatLng(51.5, -0.09),
-                        zoom: 13.0,
+                  height: 400,
+                  alignment: Alignment.centerLeft,
+                  child: FlutterMap(
+                    options: MapOptions(center: points.first, zoom: 15),
+                    layers: [
+                      TileLayerOptions(
+                          urlTemplate:
+                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          subdomains: ['a', 'b', 'c']),
+                      PolylineLayerOptions(
+                        polylines: [
+                          Polyline(
+                              points: points,
+                              strokeWidth: 4.0,
+                              color: Colors.black),
+                        ],
                       ),
-                      layers: [
-                        TileLayerOptions(
-                            urlTemplate:
-                                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                            subdomains: ['a', 'b', 'c']),
-                      ],
-                    )),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 24),
                 const Padding(
                     padding: EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),

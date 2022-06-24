@@ -1,6 +1,7 @@
 import 'package:easybikeshare/bloc/user_bloc/user_bloc.dart';
 import 'package:easybikeshare/models/user.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
+import 'package:easybikeshare/screens/credit_card/credit_card_details_screen.dart';
 import 'package:easybikeshare/screens/credit_card/credit_card_screen.dart';
 import 'package:easybikeshare/screens/profile/edit_profile_screen.dart';
 import 'package:easybikeshare/screens/widgets/profile_widget.dart';
@@ -39,25 +40,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 24),
                 buildName(state.user),
                 const SizedBox(height: 48),
-                ElevatedButton.icon(
-                    icon: const Icon(
-                      Icons.open_in_new,
-                      size: 24.0,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CreditCardScreen(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(primary: primaryBlue),
-                    label: const Text("Add credit card")),
-                const ListTile(
-                    leading: Icon(Icons.payment, color: Colors.black),
-                    title: Text('Payments'),
-                    textColor: Colors.black),
+                Column(
+                  children: state.user.creditCards
+                      .map<Widget>(
+                        (v) => ListTile(
+                            leading:
+                                const Icon(Icons.payment, color: Colors.black),
+                            title: Text(v.cardNumber.toString()),
+                            textColor: Colors.black,
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CreditCardDetailsScreen(
+                                      creditCard: v,
+                                      userRepository: widget.userRepository),
+                                )).then((value) => setState(() {
+                                  BlocProvider.of<UserBloc>(context).add(
+                                    const LoadUser(),
+                                  );
+                                }))),
+                      )
+                      .toList(),
+                ),
+                ListTile(
+                    leading: const Icon(Icons.add, color: Colors.black),
+                    title: const Text('Add credit card'),
+                    textColor: Colors.black,
+                    onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CreditCardScreen(
+                                userRepository: widget.userRepository),
+                          ),
+                        ).then((value) => setState(() {
+                              BlocProvider.of<UserBloc>(context).add(
+                                const LoadUser(),
+                              );
+                            }))),
               ],
             ),
           ),

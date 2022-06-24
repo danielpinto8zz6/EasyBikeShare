@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:easybikeshare/models/credit_card.dart';
 import 'package:easybikeshare/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepository {
   static String mainUrl = "http://192.168.1.199:8099/api";
   var authUrl = '$mainUrl/auth';
-  var registerUrl = '$mainUrl/users';
-  var userUrl = '$mainUrl/users/';
+  var usersUrl = '$mainUrl/users';
 
   final Dio dio;
 
@@ -28,7 +28,7 @@ class UserRepository {
 
     await prefs.setString('token', token);
 
-    dio.options.headers["Authorization"] = "Bearer " + token;
+    dio.options.headers["Authorization"] = "Bearer $token";
   }
 
   Future<String?> getToken() async {
@@ -65,7 +65,7 @@ class UserRepository {
   }
 
   Future<bool> register(String username, String password) async {
-    Response response = await dio.post(registerUrl, data: {
+    Response response = await dio.post(usersUrl, data: {
       "username": username,
       "password": password,
     });
@@ -79,9 +79,9 @@ class UserRepository {
     return prefs.getString('username');
   }
 
-  Future<User> getUserByUsername(String username) async {
+  Future<User> getUser() async {
     try {
-      Response response = await dio.get(userUrl + username);
+      Response response = await dio.get("$usersUrl/me");
 
       if (response.data != null) {
         return User.fromJson(response.data);
@@ -90,6 +90,33 @@ class UserRepository {
       }
     } catch (error) {
       throw Exception();
+    }
+  }
+
+  Future<bool> addCreditCard(CreditCard creditCard) async {
+    Response response =
+        await dio.post("$usersUrl/me/credit-cards", data: creditCard.toJson());
+
+    return response.statusCode == 200;
+  }
+
+  Future<bool> removeCreditCard(String creditCardNumber) async {
+    Response response =
+        await dio.delete("$usersUrl/me/credit-cards/$creditCardNumber");
+
+    return response.statusCode == 200;
+  }
+
+  Future<List<CreditCard>> getCreditCards() async {
+    Response response = await dio.get("$usersUrl/me/credit-cards");
+
+    if (response.data != null) {
+      List<CreditCard> docks = List<CreditCard>.from(
+          response.data.map((model) => CreditCard.fromJson(model)));
+
+      return docks;
+    } else {
+      return <CreditCard>[];
     }
   }
 }

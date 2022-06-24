@@ -13,3 +13,21 @@ class LoadUser extends UserEvent {
   @override
   List<Object> get props => [];
 }
+
+class SaveCreditCard extends UserEvent {
+  final CreditCard creditCard;
+
+  const SaveCreditCard(this.creditCard);
+
+  @override
+  List<Object> get props => [];
+}
+
+class RemoveCreditCard extends UserEvent {
+  final String creditCardNumber;
+
+  const RemoveCreditCard(this.creditCardNumber);
+
+  @override
+  List<Object> get props => [];
+}

@@ -16,3 +16,45 @@ class UserLoaded extends UserState {
 
   const UserLoaded(this.user);
 }
+
+class UserLoadFailure extends UserState {
+  final String error;
+
+  const UserLoadFailure({required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'UserLoadFailure { error: $error }';
+}
+
+class CreditCardSaving extends UserState {}
+
+class CreditCardSaveFailure extends UserState {
+  final String error;
+
+  const CreditCardSaveFailure({required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'CreditCardSaveFailure { error: $error }';
+}
+
+class CreditCardSaveSuccess extends UserState {}
+
+class CreditCardRemoveFailure extends UserState {
+  final String error;
+
+  const CreditCardRemoveFailure({required this.error});
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'CreditCardRemoveFailure { error: $error }';
+}
+
+class CreditCardRemoveSuccess extends UserState {}

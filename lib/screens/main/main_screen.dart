@@ -3,6 +3,7 @@ import 'package:easybikeshare/repositories/bike_repository.dart';
 import 'package:easybikeshare/repositories/payment_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/token_repository.dart';
+import 'package:easybikeshare/repositories/travel_repository.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
 import 'package:easybikeshare/screens/profile/profile_screen.dart';
 import 'package:easybikeshare/screens/bike_scanner/bike_scanner_screen.dart';
@@ -20,6 +21,7 @@ class MainScreen extends StatefulWidget {
   final BikeRepository bikeRepository;
   final RentalRepository rentalRepository;
   final PaymentRepository paymentRepository;
+  final TravelRepository travelRepository;
   final FCM firebaseMessaging;
 
   const MainScreen(
@@ -30,7 +32,8 @@ class MainScreen extends StatefulWidget {
       required this.bikeRepository,
       required this.rentalRepository,
       required this.paymentRepository,
-      required this.firebaseMessaging})
+      required this.firebaseMessaging,
+      required this.travelRepository})
       : super(key: key);
 
   @override
@@ -113,7 +116,8 @@ class _MainScreenState extends State<MainScreen> {
       case 1:
         return RentalHistoryScreen(
             rentalRepository: widget.rentalRepository,
-            paymentRepository: widget.paymentRepository);
+            paymentRepository: widget.paymentRepository,
+            travelRepository: widget.travelRepository);
       case 2:
         return ProfileScreen(userRepository: widget.userRepository);
       default:

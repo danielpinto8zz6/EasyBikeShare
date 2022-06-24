@@ -2,6 +2,7 @@ import 'package:date_format/date_format.dart';
 import 'package:easybikeshare/bloc/rental_history_bloc/rental_history_bloc.dart';
 import 'package:easybikeshare/repositories/payment_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
+import 'package:easybikeshare/repositories/travel_repository.dart';
 import 'package:easybikeshare/screens/rental/rental_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,11 +10,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class RentalHistoryScreen extends StatefulWidget {
   final RentalRepository rentalRepository;
   final PaymentRepository paymentRepository;
+  final TravelRepository travelRepository;
 
   const RentalHistoryScreen(
       {Key? key,
       required this.rentalRepository,
-      required this.paymentRepository})
+      required this.paymentRepository,
+      required this.travelRepository})
       : super(key: key);
 
   @override
@@ -44,11 +47,18 @@ class _RentalHistoryScreenState extends State<RentalHistoryScreen> {
                   : 'unknown';
               return InkWell(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => RentalDetailsScreen(
-                          rental: rental,
-                          paymentRepository: widget.paymentRepository),
-                    ));
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(
+                          builder: (context) => RentalDetailsScreen(
+                              rental: rental,
+                              paymentRepository: widget.paymentRepository,
+                              travelRepository: widget.travelRepository),
+                        ))
+                        .then((value) => setState(() {
+                              BlocProvider.of<RentalHistoryBloc>(context).add(
+                                const LoadRentalHistory(),
+                              );
+                            }));
                   },
                   child: Card(
                       child: Column(

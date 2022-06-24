@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:easybikeshare/models/payment.dart';
 import 'package:easybikeshare/repositories/bike_repository.dart';
 import 'package:easybikeshare/repositories/payment_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/token_repository.dart';
+import 'package:easybikeshare/repositories/travel_repository.dart';
 import 'package:easybikeshare/screens/auth/login_screen.dart';
 import 'package:easybikeshare/screens/main/main_screen.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
@@ -25,6 +25,7 @@ Future<void> main() async {
   final dockRepository = DockRepository(dio: dio);
   final tokenRepository = TokenRepository(dio: dio);
   final bikeRepository = BikeRepository(dio: dio);
+  final travelRepository = TravelRepository(dio: dio);
   final rentalRepository =
       RentalRepository(dio: dio, dockRepository: dockRepository);
   final paymentRepository = PaymentRepository(dio: dio);
@@ -40,16 +41,16 @@ Future<void> main() async {
           ..add(AppStarted());
       },
       child: MyApp(
-        userRepository: userRepository,
-        dockRepository: dockRepository,
-        tokenRepository: tokenRepository,
-        bikeRepository: bikeRepository,
-        rentalRepository: rentalRepository,
-        paymentRepository: paymentRepository,
-        firebaseMessaging: firebaseMessaging,
-        dio: dio,
-        key: const Key("bikeshare"),
-      ),
+          userRepository: userRepository,
+          dockRepository: dockRepository,
+          tokenRepository: tokenRepository,
+          bikeRepository: bikeRepository,
+          rentalRepository: rentalRepository,
+          paymentRepository: paymentRepository,
+          travelRepository: travelRepository,
+          firebaseMessaging: firebaseMessaging,
+          dio: dio,
+          key: const Key("bikeshare")),
     ),
   );
 }
@@ -61,6 +62,7 @@ class MyApp extends StatelessWidget {
   final BikeRepository bikeRepository;
   final RentalRepository rentalRepository;
   final PaymentRepository paymentRepository;
+  final TravelRepository travelRepository;
   final FCM firebaseMessaging;
   final Dio dio;
 
@@ -73,7 +75,8 @@ class MyApp extends StatelessWidget {
       required this.rentalRepository,
       required this.paymentRepository,
       required this.firebaseMessaging,
-      required this.dio})
+      required this.dio,
+      required this.travelRepository})
       : super(key: key);
 
   @override
@@ -96,6 +99,7 @@ class MyApp extends StatelessWidget {
               bikeRepository: bikeRepository,
               rentalRepository: rentalRepository,
               paymentRepository: paymentRepository,
+              travelRepository: travelRepository,
               firebaseMessaging: firebaseMessaging,
             );
           }

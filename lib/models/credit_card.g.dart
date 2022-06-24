@@ -7,16 +7,16 @@ part of 'credit_card.dart';
 // **************************************************************************
 
 CreditCard _$CreditCardFromJson(Map<String, dynamic> json) => CreditCard(
-      json['number'] as String,
-      json['name'] as String,
-      json['code'] as String,
-      DateTime.parse(json['validity'] as String),
+      json['cardNumber'] as String,
+      json['cardHolderName'] as String,
+      json['cvvCode'] as String,
+      json['expiryDate'] as String,
     );
 
 Map<String, dynamic> _$CreditCardToJson(CreditCard instance) =>
     <String, dynamic>{
-      'number': instance.number,
-      'name': instance.name,
-      'code': instance.code,
-      'validity': instance.validity.toIso8601String(),
+      'cardNumber': instance.cardNumber,
+      'cardHolderName': instance.cardHolderName,
+      'cvvCode': instance.cvvCode,
+      'expiryDate': instance.expiryDate,
     };

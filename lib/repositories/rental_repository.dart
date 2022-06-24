@@ -8,8 +8,7 @@ import 'package:easybikeshare/repositories/dock_repository.dart';
 
 class RentalRepository {
   static String mainUrl = 'http://192.168.1.199:8099/api';
-  var createRentalUrl = '$mainUrl/rentals';
-  var rentalHistoryUrl = '$mainUrl/rentals/history/';
+  var rentalsUrl = '$mainUrl/rentals';
 
   final Dio dio;
   final DockRepository dockRepository;
@@ -23,7 +22,7 @@ class RentalRepository {
         dockId = dock?.id;
       }
 
-      Response response = await dio.post(createRentalUrl,
+      Response response = await dio.post(rentalsUrl,
           options: Options(headers: {
             HttpHeaders.contentTypeHeader: "application/json",
           }),
@@ -39,9 +38,9 @@ class RentalRepository {
     }
   }
 
-  Future<List<Rental>> getRentalHistoryByUsername(String username) async {
+  Future<List<Rental>> getRentals() async {
     try {
-      Response response = await dio.get(rentalHistoryUrl + username);
+      Response response = await dio.get(rentalsUrl);
 
       if (response.data != null) {
         return (response.data as List).map((x) => Rental.fromJson(x)).toList();
