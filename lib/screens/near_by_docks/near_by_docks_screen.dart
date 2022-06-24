@@ -19,7 +19,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:rxdart/rxdart.dart';
 
 class NearByDocksScreen extends StatefulWidget {
@@ -51,8 +53,20 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
   late final MapController _mapController;
   late final PopupController _popupLayerController;
   List<Dock> _docks = [];
+  final _rentalButtonController = RoundedLoadingButtonController();
 
   late final NearbyDocksBloc bloc;
+
+  _onRentalButtonPressed() {
+    _rentalButtonController.start();
+    Navigator.of(context).pop();
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => BikeScannerScreen(
+        rentalRepository: widget.rentalRepository,
+        firebaseMessaging: widget.firebaseMessaging,
+      ),
+    ));
+  }
 
   @override
   void initState() {
@@ -145,12 +159,12 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
                     // Center the location marker on the map and zoom the map to level 16.
                     _centerCurrentLocationStreamController.add(16);
                   },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
                   child: const Icon(
                     Icons.my_location,
                     color: Colors.white,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
               ),
@@ -168,8 +182,8 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
                       borderStrokeWidth: 3),
                   builder: (context, markers) {
                     return FloatingActionButton(
-                      child: Text(markers.length.toString()),
                       onPressed: null,
+                      child: Text(markers.length.toString()),
                     );
                   },
                 ),
@@ -216,7 +230,9 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
                   child: BlocBuilder<NearbyDocksBloc, NearByDocksState>(
                       builder: (context, state) {
                     if (state is DockDetailsLoaded) {
-                      if (state.bike == null) {
+                      var bike = state.bike;
+                      var dock = state.dock;
+                      if (bike == null) {
                         return Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -236,21 +252,39 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
                             const Image(
                                 image: AssetImage('assets/images/bicycle.png'),
                                 width: 200),
-                            Text(state.bike!.brand + ' ' + state.bike!.model),
-                            if (state.dock.address != null)
-                              Text(state.dock.address!),
-                            ElevatedButton(
-                              child: const Text("Rent"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => BikeScannerScreen(
-                                    rentalRepository: widget.rentalRepository,
-                                    firebaseMessaging: widget.firebaseMessaging,
-                                  ),
-                                ));
-                              },
-                            )
+                            Text('${bike.brand} ${bike.model}'),
+                            Text(dock.address ?? 'Unknown address'),
+                            ElevatedButton.icon(
+                                icon: const Icon(
+                                  Icons.bike_scooter,
+                                  size: 24.0,
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => BikeScannerScreen(
+                                      rentalRepository: widget.rentalRepository,
+                                      firebaseMessaging:
+                                          widget.firebaseMessaging,
+                                    ),
+                                  ));
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    primary: primaryBlue),
+                                label: const Text("Rent")),
+                            ElevatedButton.icon(
+                                icon: const Icon(
+                                  Icons.open_in_new,
+                                  size: 24.0,
+                                ),
+                                onPressed: () {
+                                  MapsLauncher.launchCoordinates(
+                                      dock.coordinates.latitude,
+                                      dock.coordinates.longitude);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    primary: primaryBlue),
+                                label: const Text("Maps")),
                           ],
                         ),
                       );

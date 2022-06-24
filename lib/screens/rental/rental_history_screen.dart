@@ -1,5 +1,6 @@
 import 'package:date_format/date_format.dart';
 import 'package:easybikeshare/bloc/rental_history_bloc/rental_history_bloc.dart';
+import 'package:easybikeshare/repositories/payment_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/screens/rental/rental_details_screen.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RentalHistoryScreen extends StatefulWidget {
   final RentalRepository rentalRepository;
+  final PaymentRepository paymentRepository;
 
-  const RentalHistoryScreen({Key? key, required this.rentalRepository})
+  const RentalHistoryScreen(
+      {Key? key,
+      required this.rentalRepository,
+      required this.paymentRepository})
       : super(key: key);
 
   @override
@@ -30,10 +35,19 @@ class _RentalHistoryScreenState extends State<RentalHistoryScreen> {
             itemCount: state.rentals.length,
             itemBuilder: (context, index) {
               var rental = state.rentals[index];
+              var startDate = rental.startDate != null
+                  ? formatDate(rental.startDate!,
+                      [yyyy, '/', mm, '/', dd, ' ', hh, ':', mm])
+                  : 'unknown';
+              var duration = rental.startDate != null && rental.endDate != null
+                  ? rental.endDate!.difference(rental.startDate!).inMinutes
+                  : 'unknown';
               return InkWell(
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => RentalDetailsScreen(rental: rental),
+                      builder: (context) => RentalDetailsScreen(
+                          rental: rental,
+                          paymentRepository: widget.paymentRepository),
                     ));
                   },
                   child: Card(
@@ -41,14 +55,9 @@ class _RentalHistoryScreenState extends State<RentalHistoryScreen> {
                     children: [
                       ListTile(
                         leading: const Icon(Icons.bike_scooter),
-                        title: Text(formatDate(rental.startDate!,
-                            [yyyy, '/', mm, '/', dd, ' ', hh, ':', mm])),
+                        title: Text(startDate),
                         subtitle: Text(
-                          rental.endDate!
-                                  .difference(rental.startDate!)
-                                  .inMinutes
-                                  .toString() +
-                              ' min',
+                          '$duration min',
                           style:
                               TextStyle(color: Colors.black.withOpacity(0.6)),
                         ),

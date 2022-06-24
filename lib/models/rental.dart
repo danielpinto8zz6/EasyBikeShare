@@ -4,22 +4,22 @@ part 'rental.g.dart';
 
 @JsonSerializable()
 class Rental {
-  final String? id;
-  String? originDockId;
+  final String id;
+  String originDockId;
   final String? destinationDockId;
   final String bikeId;
-  final String? username;
-  final int? status;
+  final String username;
+  final int status;
   final DateTime? startDate;
   final DateTime? endDate;
 
   Rental(
-      {this.id,
-      this.originDockId,
+      {required this.id,
+      required this.originDockId,
       this.destinationDockId,
       required this.bikeId,
-      this.username,
-      this.status,
+      required this.username,
+      required this.status,
       this.startDate,
       this.endDate});
 

@@ -1,9 +1,10 @@
 import 'package:easybikeshare/notification.dart';
 import 'package:easybikeshare/repositories/bike_repository.dart';
+import 'package:easybikeshare/repositories/payment_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/token_repository.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
-import 'package:easybikeshare/screens/account/profile_screen.dart';
+import 'package:easybikeshare/screens/profile/profile_screen.dart';
 import 'package:easybikeshare/screens/bike_scanner/bike_scanner_screen.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
 import 'package:easybikeshare/screens/near_by_docks/near_by_docks_screen.dart';
@@ -18,6 +19,7 @@ class MainScreen extends StatefulWidget {
   final TokenRepository tokenRepository;
   final BikeRepository bikeRepository;
   final RentalRepository rentalRepository;
+  final PaymentRepository paymentRepository;
   final FCM firebaseMessaging;
 
   const MainScreen(
@@ -27,6 +29,7 @@ class MainScreen extends StatefulWidget {
       required this.tokenRepository,
       required this.bikeRepository,
       required this.rentalRepository,
+      required this.paymentRepository,
       required this.firebaseMessaging})
       : super(key: key);
 
@@ -108,7 +111,9 @@ class _MainScreenState extends State<MainScreen> {
             rentalRepository: widget.rentalRepository,
             firebaseMessaging: widget.firebaseMessaging);
       case 1:
-        return RentalHistoryScreen(rentalRepository: widget.rentalRepository);
+        return RentalHistoryScreen(
+            rentalRepository: widget.rentalRepository,
+            paymentRepository: widget.paymentRepository);
       case 2:
         return ProfileScreen(userRepository: widget.userRepository);
       default:

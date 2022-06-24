@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:easybikeshare/models/payment.dart';
 import 'package:easybikeshare/repositories/bike_repository.dart';
+import 'package:easybikeshare/repositories/payment_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/token_repository.dart';
 import 'package:easybikeshare/screens/auth/login_screen.dart';
@@ -25,6 +27,7 @@ Future<void> main() async {
   final bikeRepository = BikeRepository(dio: dio);
   final rentalRepository =
       RentalRepository(dio: dio, dockRepository: dockRepository);
+  final paymentRepository = PaymentRepository(dio: dio);
 
   final firebaseMessaging =
       FCM(userRepository: userRepository, tokenRepository: tokenRepository);
@@ -42,6 +45,7 @@ Future<void> main() async {
         tokenRepository: tokenRepository,
         bikeRepository: bikeRepository,
         rentalRepository: rentalRepository,
+        paymentRepository: paymentRepository,
         firebaseMessaging: firebaseMessaging,
         dio: dio,
         key: const Key("bikeshare"),
@@ -56,6 +60,7 @@ class MyApp extends StatelessWidget {
   final TokenRepository tokenRepository;
   final BikeRepository bikeRepository;
   final RentalRepository rentalRepository;
+  final PaymentRepository paymentRepository;
   final FCM firebaseMessaging;
   final Dio dio;
 
@@ -66,6 +71,7 @@ class MyApp extends StatelessWidget {
       required this.tokenRepository,
       required this.bikeRepository,
       required this.rentalRepository,
+      required this.paymentRepository,
       required this.firebaseMessaging,
       required this.dio})
       : super(key: key);
@@ -89,6 +95,7 @@ class MyApp extends StatelessWidget {
               tokenRepository: tokenRepository,
               bikeRepository: bikeRepository,
               rentalRepository: rentalRepository,
+              paymentRepository: paymentRepository,
               firebaseMessaging: firebaseMessaging,
             );
           }
