@@ -62,6 +62,7 @@ dependencies:
   maps_launcher: ^2.0.1
   flutter_credit_card: ^3.0.1
   location: ^4.4.0
+  screen_loader: ^4.0.1
   
 dev_dependencies:
   build_runner: ^2.1.8

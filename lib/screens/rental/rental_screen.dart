@@ -9,7 +9,9 @@ import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/travel_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:location/location.dart';
+import 'package:screen_loader/screen_loader.dart';
 
 class RentalScreen extends StatefulWidget {
   final String bikeId;
@@ -29,10 +31,27 @@ class RentalScreen extends StatefulWidget {
   _RentalScreenState createState() => _RentalScreenState();
 }
 
-class _RentalScreenState extends State<RentalScreen> {
+class _RentalScreenState extends State<RentalScreen> with ScreenLoader {
   final _locationHandler = Location();
   late StreamSubscription<LocationData> _locationSubscription;
   late final Rental rental;
+  String currentState = '';
+
+  updateCurrentState(String state) {
+    setState(() {
+      currentState = state;
+    });
+  }
+
+  @override
+  loader() {
+    return AlertDialog(
+      title: Text(currentState),
+    );
+  }
+
+  @override
+  loadingBgBlur() => 10.0;
 
   @override
   Widget build(BuildContext context) {
@@ -48,136 +67,65 @@ class _RentalScreenState extends State<RentalScreen> {
 
               return bloc;
             },
-            child: BlocListener<RentalBloc, RentalState>(
-                listener: (context, state) {},
-                child: BlocBuilder<RentalBloc, RentalState>(
-                    builder: (context, state) {
-                  if (state is RentalAccepted) {
-                    rental = state.rental;
-                  }
+            child: BlocListener<RentalBloc, RentalState>(listener:
+                (context, state) {
+              if (state is RentalAccepted) {
+                rental = state.rental;
+                startLoading();
+              }
 
-                  if (state is BikeReserved) {
-                    return Container(
-                        height: 500,
-                        color: Colors.white,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: const <Widget>[
-                              CircularProgressIndicator(),
-                              Text("Bike reserved")
-                            ],
-                          ),
-                        ));
-                  }
-                  if (state is BikeValidated) {
-                    return Container(
-                        height: 500,
-                        color: Colors.white,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: const <Widget>[
-                              CircularProgressIndicator(),
-                              Text("Bike validated")
-                            ],
-                          ),
-                        ));
-                  }
-                  if (state is BikeUnlocked) {
-                    _locationHandler.changeSettings(interval: 2000);
-                    _locationSubscription = _locationHandler.onLocationChanged
-                        .listen((LocationData currentLocation) async {
-                      print(
-                          'Location: ${currentLocation.latitude}, ${currentLocation.longitude}');
-                      var travelEvent = TravelEvent(
-                          rental.id,
-                          Coordinates(
-                              latitude: currentLocation.latitude!,
-                              longitude: currentLocation.longitude!));
-                      widget.travelRepository.createTravelEvent(travelEvent);
-                    });
+              if (state is BikeReserved) {
+                updateCurrentState("Bike reserved, validating bike...");
+              }
+              if (state is BikeValidated) {
+                updateCurrentState("Bike validated, unlocking...");
+              }
+              if (state is BikeUnlocked) {
+                updateCurrentState("Bike unlocked, enjoy your ride");
+                stopLoading();
+                _locationHandler.changeSettings(interval: 2000);
+                _locationSubscription = _locationHandler.onLocationChanged
+                    .listen((LocationData currentLocation) async {
+                  print(
+                      'Location: ${currentLocation.latitude}, ${currentLocation.longitude}');
+                  var travelEvent = TravelEvent(
+                      rental.id,
+                      Coordinates(
+                          latitude: currentLocation.latitude!,
+                          longitude: currentLocation.longitude!));
+                  widget.travelRepository.createTravelEvent(travelEvent);
+                });
+              }
+              if (state is BikeLocked) {
+                _locationSubscription.cancel();
 
-                    return Container(
-                        height: 500,
-                        color: Colors.white,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: const <Widget>[
-                              CircularProgressIndicator(),
-                              Text("Bike unlocked")
-                            ],
-                          ),
-                        ));
-                  }
-                  if (state is BikeLocked) {
-                    _locationSubscription.cancel();
-
-                    Navigator.of(context).pop();
-                  }
-                  if (state is BikeValidationFailed) {
-                    return Container(
-                        height: 500,
-                        color: Colors.white,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: const <Widget>[
-                              CircularProgressIndicator(),
-                              Text("Validation failed")
-                            ],
-                          ),
-                        ));
-                  }
-                  if (state is BikeUnlockFailed) {
-                    return Container(
-                        height: 500,
-                        color: Colors.white,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: const <Widget>[
-                              CircularProgressIndicator(),
-                              Text("Unlock failed")
-                            ],
-                          ),
-                        ));
-                  }
-                  if (state is BikeReservationFailed) {
-                    return Container(
-                        height: 500,
-                        color: Colors.white,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: const <Widget>[
-                              CircularProgressIndicator(),
-                              Text("Reservation failed")
-                            ],
-                          ),
-                        ));
-                  }
-
-                  return Container(
-                      height: 500,
-                      color: Colors.white,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: const <Widget>[
-                            CircularProgressIndicator(),
-                            Text("Reserving bike")
+                Navigator.of(context).pop();
+              }
+              if (state is BikeValidationFailed) {}
+              if (state is BikeUnlockFailed) {}
+              if (state is BikeReservationFailed) {}
+            }, child:
+                BlocBuilder<RentalBloc, RentalState>(builder: (context, state) {
+              return Container(
+                  height: 500,
+                  color: Colors.white,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        FlutterMap(
+                          options: MapOptions(zoom: 15),
+                          layers: [
+                            TileLayerOptions(
+                                urlTemplate:
+                                    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                subdomains: ['a', 'b', 'c'])
                           ],
-                        ),
-                      ));
-                }))));
+                        )
+                      ],
+                    ),
+                  ));
+            }))));
   }
 }
