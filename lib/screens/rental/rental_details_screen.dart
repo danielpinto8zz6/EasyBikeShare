@@ -179,19 +179,6 @@ class _RentalDetailsState extends State<RentalDetailsScreen> {
                           )
                         ])))),
                 const SizedBox(height: 24),
-                // Padding(
-                //     padding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),
-                //     child: Align(
-                //         alignment: Alignment.centerLeft,
-                //         child: SizedBox(
-                //             child: Row(children: const [
-                //           Icon(Icons.reviews_outlined),
-                //           SizedBox(width: 6),
-                //           Text(
-                //             "Classification",
-                //             style: TextStyle(fontSize: 16),
-                //           )
-                //         ]))))
               ]);
             });
           }

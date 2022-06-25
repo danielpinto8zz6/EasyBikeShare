@@ -7,9 +7,8 @@ part 'travel_event.g.dart';
 class TravelEvent {
   final String rentalId;
   final Coordinates coordinates;
-  final String username;
 
-  TravelEvent(this.rentalId, this.coordinates, this.username);
+  TravelEvent(this.rentalId, this.coordinates);
 
   factory TravelEvent.fromJson(Map<String, dynamic> json) =>
       _$TravelEventFromJson(json);

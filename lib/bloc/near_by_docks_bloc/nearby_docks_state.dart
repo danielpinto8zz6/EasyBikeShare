@@ -1,7 +1,7 @@
 import 'package:easybikeshare/models/bike.dart';
 import 'package:easybikeshare/models/dock.dart';
 import 'package:equatable/equatable.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 
 abstract class NearByDocksState extends Equatable {
   const NearByDocksState();
@@ -24,7 +24,7 @@ class NearByDocksLoaded extends NearByDocksState {
 }
 
 class UserLocationLoaded extends NearByDocksState {
-  final Position position;
+  final LocationData position;
 
   const UserLocationLoaded(this.position);
 

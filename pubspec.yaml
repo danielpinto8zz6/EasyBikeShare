@@ -44,7 +44,6 @@ dependencies:
   flutter_map: ^0.14.0
   latlong2: ^0.8.1
   flutter_map_location_marker: any
-  geolocator: ^8.1.0
   flutter_map_marker_popup: any
   flutter_map_marker_cluster: any
   cached_network_image: ^3.2.0
@@ -62,7 +61,8 @@ dependencies:
   expansion_widget: ^0.0.3
   maps_launcher: ^2.0.1
   flutter_credit_card: ^3.0.1
-
+  location: ^4.4.0
+  
 dev_dependencies:
   build_runner: ^2.1.8
   flutter_test:

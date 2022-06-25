@@ -1,19 +1,28 @@
+import 'dart:async';
+
 import 'package:easybikeshare/bloc/rental_bloc/rental_bloc.dart';
+import 'package:easybikeshare/models/coordinates.dart';
+import 'package:easybikeshare/models/rental.dart';
+import 'package:easybikeshare/models/travel_event.dart';
 import 'package:easybikeshare/notification.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
+import 'package:easybikeshare/repositories/travel_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:location/location.dart';
 
 class RentalScreen extends StatefulWidget {
   final String bikeId;
   final RentalRepository rentalRepository;
+  final TravelRepository travelRepository;
   final FCM firebaseMessaging;
 
   const RentalScreen(
       {Key? key,
       required this.bikeId,
       required this.rentalRepository,
-      required this.firebaseMessaging})
+      required this.firebaseMessaging,
+      required this.travelRepository})
       : super(key: key);
 
   @override
@@ -21,6 +30,10 @@ class RentalScreen extends StatefulWidget {
 }
 
 class _RentalScreenState extends State<RentalScreen> {
+  final _locationHandler = Location();
+  late StreamSubscription<LocationData> _locationSubscription;
+  late final Rental rental;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +52,10 @@ class _RentalScreenState extends State<RentalScreen> {
                 listener: (context, state) {},
                 child: BlocBuilder<RentalBloc, RentalState>(
                     builder: (context, state) {
+                  if (state is RentalAccepted) {
+                    rental = state.rental;
+                  }
+
                   if (state is BikeReserved) {
                     return Container(
                         height: 500,
@@ -70,6 +87,19 @@ class _RentalScreenState extends State<RentalScreen> {
                         ));
                   }
                   if (state is BikeUnlocked) {
+                    _locationHandler.changeSettings(interval: 2000);
+                    _locationSubscription = _locationHandler.onLocationChanged
+                        .listen((LocationData currentLocation) async {
+                      print(
+                          'Location: ${currentLocation.latitude}, ${currentLocation.longitude}');
+                      var travelEvent = TravelEvent(
+                          rental.id,
+                          Coordinates(
+                              latitude: currentLocation.latitude!,
+                              longitude: currentLocation.longitude!));
+                      widget.travelRepository.createTravelEvent(travelEvent);
+                    });
+
                     return Container(
                         height: 500,
                         color: Colors.white,
@@ -83,6 +113,11 @@ class _RentalScreenState extends State<RentalScreen> {
                             ],
                           ),
                         ));
+                  }
+                  if (state is BikeLocked) {
+                    _locationSubscription.cancel();
+
+                    Navigator.of(context).pop();
                   }
                   if (state is BikeValidationFailed) {
                     return Container(

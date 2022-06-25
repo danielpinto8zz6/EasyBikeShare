@@ -30,6 +30,8 @@
 	<string>This application requires location services to work</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This application requires location services to work</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>The app needs the location</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

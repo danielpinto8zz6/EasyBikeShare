@@ -23,6 +23,8 @@ class BikeReserved extends RentalState {}
 
 class BikeUnlocked extends RentalState {}
 
+class BikeLocked extends RentalState {}
+
 class BikeValidationFailed extends RentalState {}
 
 class BikeReservationFailed extends RentalState {}

@@ -66,6 +66,7 @@ class _MainScreenState extends State<MainScreen> {
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => BikeScannerScreen(
                         rentalRepository: widget.rentalRepository,
+                        travelRepository: widget.travelRepository,
                         firebaseMessaging: widget.firebaseMessaging,
                       ),
                     ));
@@ -112,6 +113,7 @@ class _MainScreenState extends State<MainScreen> {
             tokenRepository: widget.tokenRepository,
             bikeRepository: widget.bikeRepository,
             rentalRepository: widget.rentalRepository,
+            travelRepository: widget.travelRepository,
             firebaseMessaging: widget.firebaseMessaging);
       case 1:
         return RentalHistoryScreen(

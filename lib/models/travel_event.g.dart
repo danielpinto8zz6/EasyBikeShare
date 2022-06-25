@@ -7,14 +7,11 @@ part of 'travel_event.dart';
 // **************************************************************************
 
 TravelEvent _$TravelEventFromJson(Map<String, dynamic> json) => TravelEvent(
-      json['rentalId'] as String,
-      Coordinates.fromJson(json['coordinates'] as Map<String, dynamic>),
-      json['username'] as String,
-    );
+    json['rentalId'] as String,
+    Coordinates.fromJson(json['coordinates'] as Map<String, dynamic>));
 
 Map<String, dynamic> _$TravelEventToJson(TravelEvent instance) =>
     <String, dynamic>{
       'rentalId': instance.rentalId,
-      'coordinates': instance.coordinates,
-      'username': instance.username,
+      'coordinates': instance.coordinates
     };

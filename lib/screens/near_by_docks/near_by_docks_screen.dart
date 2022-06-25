@@ -9,6 +9,7 @@ import 'package:easybikeshare/providers/cachted_tile_provider.dart';
 import 'package:easybikeshare/repositories/bike_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/token_repository.dart';
+import 'package:easybikeshare/repositories/travel_repository.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
 import 'package:easybikeshare/screens/bike_scanner/bike_scanner_screen.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
@@ -19,6 +20,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -30,6 +32,7 @@ class NearByDocksScreen extends StatefulWidget {
   final TokenRepository tokenRepository;
   final BikeRepository bikeRepository;
   final RentalRepository rentalRepository;
+  final TravelRepository travelRepository;
   final FCM firebaseMessaging;
 
   const NearByDocksScreen(
@@ -39,7 +42,8 @@ class NearByDocksScreen extends StatefulWidget {
       required this.tokenRepository,
       required this.bikeRepository,
       required this.rentalRepository,
-      required this.firebaseMessaging})
+      required this.firebaseMessaging,
+      required this.travelRepository})
       : super(key: key);
 
   @override
@@ -63,6 +67,7 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => BikeScannerScreen(
         rentalRepository: widget.rentalRepository,
+        travelRepository: widget.travelRepository,
         firebaseMessaging: widget.firebaseMessaging,
       ),
     ));
@@ -85,6 +90,14 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _locationHandler = Location();
+    late StreamSubscription<LocationData> _locationSubscription;
+    _locationHandler.enableBackgroundMode();
+    _locationSubscription = _locationHandler.onLocationChanged
+        .listen((LocationData currentLocation) async {
+      print(
+          'Location: ${currentLocation.latitude}, ${currentLocation.longitude}');
+    });
     return BlocProvider(
         create: (context) {
           bloc = NearbyDocksBloc(
@@ -264,6 +277,7 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
                                   Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => BikeScannerScreen(
                                       rentalRepository: widget.rentalRepository,
+                                      travelRepository: widget.travelRepository,
                                       firebaseMessaging:
                                           widget.firebaseMessaging,
                                     ),

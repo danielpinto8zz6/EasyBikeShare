@@ -13,6 +13,7 @@ class RentalBloc extends Bloc<RentalEvent, RentalState> {
     'bike-validated': BikeValidated(),
     'bike-unlocked': BikeUnlocked(),
     'bike-reserved': BikeReserved(),
+    'bike-locked': BikeLocked(),
     'bike-validation-failed': BikeValidationFailed(),
     'bike-reservation-failed': BikeReservationFailed(),
     'bike-unlock-failed': BikeUnlockFailed()
