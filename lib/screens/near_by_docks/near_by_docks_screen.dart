@@ -260,6 +260,8 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
                                               widget.travelRepository,
                                           firebaseMessaging:
                                               widget.firebaseMessaging,
+                                          userRepository: widget.userRepository,
+                                          dockRepository: widget.dockRepository,
                                         ),
                                       ))
                                       .then((value) => setState(() {

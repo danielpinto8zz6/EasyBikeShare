@@ -110,12 +110,16 @@ class UserRepository {
   Future<List<CreditCard>> getCreditCards() async {
     Response response = await dio.get("$usersUrl/me/credit-cards");
 
-    if (response.data != null) {
-      List<CreditCard> docks = List<CreditCard>.from(
-          response.data.map((model) => CreditCard.fromJson(model)));
+    try {
+      if (response.data != null) {
+        List<CreditCard> docks = List<CreditCard>.from(
+            response.data.map((model) => CreditCard.fromJson(model)));
 
-      return docks;
-    } else {
+        return docks;
+      } else {
+        return <CreditCard>[];
+      }
+    } catch (error) {
       return <CreditCard>[];
     }
   }

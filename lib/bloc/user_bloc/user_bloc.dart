@@ -50,5 +50,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         emit(CreditCardRemoveFailure(error: error.toString()));
       }
     });
+
+    on<GetCreditCards>((event, emit) async {
+      var results = await userRepository.getCreditCards();
+      emit(CreditCardsLoaded(results));
+    });
   }
 }

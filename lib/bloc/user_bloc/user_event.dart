@@ -31,3 +31,8 @@ class RemoveCreditCard extends UserEvent {
   @override
   List<Object> get props => [];
 }
+
+class GetCreditCards extends UserEvent {
+  @override
+  List<Object> get props => [];
+}

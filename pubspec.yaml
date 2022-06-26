@@ -65,6 +65,7 @@ dependencies:
     git:
       url: https://github.com/pablojimpas/flutter_map_marker_cluster.git
       ref: bump-flutter_map-1.0.0
+  wakelock: ^0.6.1+2
   
 dev_dependencies:
   build_runner: ^2.1.8

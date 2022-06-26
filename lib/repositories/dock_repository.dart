@@ -1,6 +1,7 @@
 import 'package:easybikeshare/models/coordinates.dart';
 import 'package:dio/dio.dart';
 import 'package:easybikeshare/models/dock.dart';
+import 'package:easybikeshare/models/dock_status.dart';
 
 class DockRepository {
   static String mainUrl = "http://192.168.1.199:8099/api";
@@ -12,12 +13,12 @@ class DockRepository {
   DockRepository({required this.dio});
 
   Future<List<Dock>> getNearByDocks(
-      Coordinates coordinates, double radius, bool onlyAvailable) async {
+      Coordinates coordinates, double radius, DockStatus dockStatus) async {
     Response response = await dio.get(nearByBikesUrl, queryParameters: {
       "coordinates.latitude": coordinates.latitude,
       "coordinates.longitude": coordinates.longitude,
       "radius": radius,
-      "onlyAvailable": onlyAvailable
+      "filterStatus": dockStatus.index
     });
 
     if (response.data != null) {

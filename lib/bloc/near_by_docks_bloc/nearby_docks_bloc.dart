@@ -1,5 +1,6 @@
 import 'package:easybikeshare/models/coordinates.dart';
 import 'package:easybikeshare/models/dock.dart';
+import 'package:easybikeshare/models/dock_status.dart';
 import 'package:easybikeshare/repositories/bike_repository.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -43,12 +44,12 @@ class NearbyDocksBloc extends Bloc<NearbyDocksEvent, NearByDocksState> {
           final coordinates = Coordinates(
               latitude: position.latitude!, longitude: position.longitude!);
 
-          final List<Dock> docks =
-              await dockRepository.getNearByDocks(coordinates, 100, false);
+          final List<Dock> docks = await dockRepository.getNearByDocks(
+              coordinates, 100, DockStatus.withBike);
 
           emit(NearByDocksLoaded(docks: docks));
         } catch (_) {
-          emit(const NearByDocksFailure(error: "Failed to load"));
+          emit(NearByDocksLoaded(docks: List<Dock>.empty()));
         }
       }
     });

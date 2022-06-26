@@ -72,6 +72,8 @@ class _MainScreenState extends State<MainScreen> {
                             rentalRepository: widget.rentalRepository,
                             travelRepository: widget.travelRepository,
                             firebaseMessaging: widget.firebaseMessaging,
+                            userRepository: widget.userRepository,
+                            dockRepository: widget.dockRepository,
                           ),
                         ))
                         .then((value) => setState(() {

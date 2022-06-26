@@ -58,3 +58,9 @@ class CreditCardRemoveFailure extends UserState {
 }
 
 class CreditCardRemoveSuccess extends UserState {}
+
+class CreditCardsLoaded extends UserState {
+  final List<CreditCard> creditCards;
+
+  const CreditCardsLoaded(this.creditCards);
+}

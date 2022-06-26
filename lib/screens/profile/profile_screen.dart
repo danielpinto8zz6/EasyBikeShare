@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:easybikeshare/bloc/user_bloc/user_bloc.dart';
 import 'package:easybikeshare/models/user.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
@@ -7,13 +5,9 @@ import 'package:easybikeshare/screens/credit_card/credit_card_details_screen.dar
 import 'package:easybikeshare/screens/credit_card/credit_card_screen.dart';
 import 'package:easybikeshare/screens/profile/edit_profile_screen.dart';
 import 'package:easybikeshare/screens/widgets/profile_widget.dart';
-import 'package:easybikeshare/screens/widgets/stopwatch.dart';
 import 'package:easybikeshare/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
-import 'package:latlong2/latlong.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserRepository userRepository;
@@ -26,10 +20,14 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  late final UserBloc _userBloc;
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) {
-      return UserBloc(widget.userRepository)..add(const LoadUser());
+    return Scaffold(
+        body: BlocProvider<UserBloc>(create: (context) {
+      _userBloc = UserBloc(widget.userRepository)..add(const LoadUser());
+      return _userBloc;
     }, child: BlocBuilder<UserBloc, UserState>(builder: (context, state) {
       if (state is UserLoaded) {
         return Builder(
@@ -54,17 +52,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 const Icon(Icons.payment, color: Colors.black),
                             title: Text(v.cardNumber.toString()),
                             textColor: Colors.black,
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
+                            onTap: () => Navigator.of(context)
+                                .push(MaterialPageRoute(
                                   builder: (context) => CreditCardDetailsScreen(
                                       creditCard: v,
                                       userRepository: widget.userRepository),
-                                )).then((value) => setState(() {
-                                  BlocProvider.of<UserBloc>(context).add(
-                                    const LoadUser(),
-                                  );
-                                }))),
+                                ))
+                                .then((value) => setState(() {
+                                      _userBloc.add(const LoadUser());
+                                    }))),
                       )
                       .toList(),
                 ),
@@ -79,9 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 userRepository: widget.userRepository),
                           ),
                         ).then((value) => setState(() {
-                              BlocProvider.of<UserBloc>(context).add(
-                                const LoadUser(),
-                              );
+                              _userBloc.add(const LoadUser());
                             }))),
               ],
             ),
@@ -99,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: const <Widget>[CircularProgressIndicator()],
             ),
           ));
-    }));
+    })));
   }
 
   Widget buildName(User user) => Column(

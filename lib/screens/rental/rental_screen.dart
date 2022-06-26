@@ -1,11 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:easybikeshare/bloc/rental_bloc/rental_bloc.dart';
 import 'package:easybikeshare/models/coordinates.dart';
+import 'package:easybikeshare/models/dock.dart';
 import 'package:easybikeshare/models/rental.dart';
 import 'package:easybikeshare/models/travel_event.dart';
 import 'package:easybikeshare/notification.dart';
+import 'package:easybikeshare/repositories/dock_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/travel_repository.dart';
 import 'package:easybikeshare/screens/widgets/stopwatch.dart';
@@ -14,13 +15,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:wakelock/wakelock.dart';
 
 class RentalScreen extends StatefulWidget {
   final String bikeId;
   final RentalRepository rentalRepository;
   final TravelRepository travelRepository;
+  final DockRepository dockRepository;
   final FCM firebaseMessaging;
 
   const RentalScreen(
@@ -28,17 +32,19 @@ class RentalScreen extends StatefulWidget {
       required this.bikeId,
       required this.rentalRepository,
       required this.firebaseMessaging,
-      required this.travelRepository})
+      required this.travelRepository,
+      required this.dockRepository})
       : super(key: key);
 
   @override
-  _RentalScreenState createState() => _RentalScreenState();
+  RentalScreenState createState() => RentalScreenState();
 }
 
-class _RentalScreenState extends State<RentalScreen> {
+class RentalScreenState extends State<RentalScreen> {
   final _locationHandler = Location();
   late StreamSubscription<LocationData> _locationSubscription;
   late Rental rental;
+  List<Dock> _docks = [];
 
   late CenterOnLocationUpdate _centerOnLocationUpdate;
   late StreamController<double?> _centerCurrentLocationStreamController;
@@ -55,7 +61,8 @@ class _RentalScreenState extends State<RentalScreen> {
   @override
   void dispose() {
     _centerCurrentLocationStreamController.close();
-    _locationSubscription?.cancel();
+    _locationSubscription.cancel();
+    Wakelock.disable();
     super.dispose();
   }
 
@@ -63,7 +70,7 @@ class _RentalScreenState extends State<RentalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: BlocProvider(create: (context) {
-      var bloc = RentalBloc(widget.rentalRepository)
+      var bloc = RentalBloc(widget.rentalRepository, widget.dockRepository)
         ..add(LoadRental(widget.bikeId));
 
       widget.firebaseMessaging.eventCtlr.stream.listen((event) {
@@ -100,6 +107,8 @@ class _RentalScreenState extends State<RentalScreen> {
           widget.travelRepository.createTravelEvent(travelEvent);
         });
 
+        Wakelock.enable();
+
         return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
           Container(
             height: 600,
@@ -120,6 +129,7 @@ class _RentalScreenState extends State<RentalScreen> {
                   }
                 },
               ),
+
               // ignore: sort_child_properties_last
               children: [
                 TileLayerWidget(
@@ -130,6 +140,10 @@ class _RentalScreenState extends State<RentalScreen> {
                     maxZoom: 19,
                   ),
                 ),
+                MarkerLayerWidget(
+                    options: MarkerLayerOptions(
+                  markers: buildDockMarkers(state.docks),
+                )),
                 LocationMarkerLayerWidget(
                   plugin: LocationMarkerPlugin(
                     centerCurrentLocationStream:
@@ -193,6 +207,7 @@ class _RentalScreenState extends State<RentalScreen> {
       }
 
       if (state is BikeAttached) {
+        Wakelock.disable();
         _locationSubscription.cancel();
 
         Navigator.pop(context);
@@ -205,5 +220,27 @@ class _RentalScreenState extends State<RentalScreen> {
         child: Text(currentState, style: const TextStyle(fontSize: 20.0)),
       );
     })));
+  }
+
+  List<Marker> get _markers => _docks
+      .map(
+        (dock) => Marker(
+          point: LatLng(dock.coordinates.latitude, dock.coordinates.longitude),
+          width: 40,
+          height: 40,
+          anchorPos: AnchorPos.align(AnchorAlign.top),
+          builder: (BuildContext context) {
+            return GestureDetector(
+              child: const Icon(Icons.location_on, size: 40),
+            );
+          },
+        ),
+      )
+      .toList();
+
+  buildDockMarkers(List<Dock> docks) {
+    _docks = docks;
+
+    return _markers;
   }
 }
