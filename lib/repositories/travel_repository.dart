@@ -24,7 +24,7 @@ class TravelRepository {
     }
   }
 
-  Future<List<TravelEvent>> getTravelEventsByRentalId(String rentalId) async {
+  Future<List<TravelEvent>?> getTravelEventsByRentalId(String rentalId) async {
     try {
       Response response = await dio.get("$travelUrl/rental/$rentalId");
 
@@ -33,10 +33,10 @@ class TravelRepository {
             .map((x) => TravelEvent.fromJson(x))
             .toList();
       } else {
-        throw Exception();
+        return null;
       }
     } catch (error) {
-      throw Exception();
+      return null;
     }
   }
 }

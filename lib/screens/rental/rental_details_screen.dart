@@ -70,8 +70,8 @@ class _RentalDetailsState extends State<RentalDetailsScreen> {
         }, child: BlocBuilder<RentalDetailsBloc, RentalDetailsState>(
             builder: (context, state) {
           if (state is RentalDetailsLoaded) {
-            String value = state.payment.value != null
-                ? "${state.payment.value}€ "
+            String value = state.payment?.value != null
+                ? "${state.payment!.value}€ "
                 : 'NaN';
             String distance = "24km";
             String duration = widget.rental.startDate != null &&
@@ -83,10 +83,14 @@ class _RentalDetailsState extends State<RentalDetailsScreen> {
                     [yyyy, '/', mm, '/', dd, ' ', hh, ':', mm])
                 : 'unknown';
 
-            var points = state.travelEvents
-                .map((x) =>
-                    LatLng(x.coordinates.latitude, x.coordinates.longitude))
-                .toList();
+            var points = state.travelEvents != null
+                ? state.travelEvents!
+                    .map((x) =>
+                        LatLng(x.coordinates.latitude, x.coordinates.longitude))
+                    .toList()
+                : List<LatLng>.empty();
+            var center = points.isNotEmpty ? points.first : LatLng(0, 0);
+            var zoom = points.isNotEmpty ? 16.0 : 1.0;
 
             return Builder(builder: (context) {
               return Column(children: [
@@ -94,7 +98,11 @@ class _RentalDetailsState extends State<RentalDetailsScreen> {
                   height: 400,
                   alignment: Alignment.centerLeft,
                   child: FlutterMap(
-                    options: MapOptions(center: points.first, zoom: 15),
+                    options: MapOptions(
+                        interactiveFlags:
+                            InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+                        center: center,
+                        zoom: zoom),
                     layers: [
                       TileLayerOptions(
                           urlTemplate:

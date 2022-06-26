@@ -1,6 +1,7 @@
 import 'package:easybikeshare/notification.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/travel_repository.dart';
+import 'package:easybikeshare/screens/main/main_screen.dart';
 import 'package:easybikeshare/screens/rental/rental_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -70,14 +71,16 @@ class _BikeScannerState extends State<BikeScannerScreen> {
                         setState(() {
                           this.barcode = barcode.rawValue;
                         });
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => RentalScreen(
-                            bikeId: barcode.rawValue!,
-                            rentalRepository: widget.rentalRepository,
-                            travelRepository: widget.travelRepository,
-                            firebaseMessaging: widget.firebaseMessaging,
-                          ),
-                        ));
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => RentalScreen(
+                                      bikeId: barcode.rawValue!,
+                                      rentalRepository: widget.rentalRepository,
+                                      travelRepository: widget.travelRepository,
+                                      firebaseMessaging:
+                                          widget.firebaseMessaging,
+                                    )),
+                            (Route<dynamic> route) => route.isFirst);
                       })),
             ),
             Align(

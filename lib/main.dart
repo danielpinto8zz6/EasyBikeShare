@@ -89,7 +89,7 @@ class MyApp extends StatelessWidget {
           if (state is AuthenticationAuthenticated) {
             firebaseMessaging.setToken(state.username);
 
-            dio.options.headers["Authorization"] = "Bearer " + state.token;
+            dio.options.headers["Authorization"] = "Bearer ${state.token}";
             dio.options.headers["Accept"] = "*/*";
 
             return MainScreen(

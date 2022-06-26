@@ -1,3 +1,5 @@
+import 'package:easybikeshare/bloc/near_by_docks_bloc/nearby_docks_bloc.dart';
+import 'package:easybikeshare/bloc/near_by_docks_bloc/nearby_docks_event.dart';
 import 'package:easybikeshare/notification.dart';
 import 'package:easybikeshare/repositories/bike_repository.dart';
 import 'package:easybikeshare/repositories/payment_repository.dart';
@@ -12,6 +14,7 @@ import 'package:easybikeshare/screens/near_by_docks/near_by_docks_screen.dart';
 import 'package:easybikeshare/screens/rental/rental_history_screen.dart';
 import 'package:easybikeshare/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class MainScreen extends StatefulWidget {
@@ -63,13 +66,19 @@ class _MainScreenState extends State<MainScreen> {
               // width: 50.0,
               child: FloatingActionButton.extended(
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => BikeScannerScreen(
-                        rentalRepository: widget.rentalRepository,
-                        travelRepository: widget.travelRepository,
-                        firebaseMessaging: widget.firebaseMessaging,
-                      ),
-                    ));
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(
+                          builder: (context) => BikeScannerScreen(
+                            rentalRepository: widget.rentalRepository,
+                            travelRepository: widget.travelRepository,
+                            firebaseMessaging: widget.firebaseMessaging,
+                          ),
+                        ))
+                        .then((value) => setState(() {
+                              BlocProvider.of<NearbyDocksBloc>(context).add(
+                                const GetNearByDocks(),
+                              );
+                            }));
                   },
                   label: const Text("Scan"),
                   icon: const Icon(Icons.document_scanner),

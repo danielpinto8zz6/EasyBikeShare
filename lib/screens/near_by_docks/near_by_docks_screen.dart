@@ -20,10 +20,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:rxdart/rxdart.dart';
 
 class NearByDocksScreen extends StatefulWidget {
@@ -57,21 +55,8 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
   late final MapController _mapController;
   late final PopupController _popupLayerController;
   List<Dock> _docks = [];
-  final _rentalButtonController = RoundedLoadingButtonController();
 
   late final NearbyDocksBloc bloc;
-
-  _onRentalButtonPressed() {
-    _rentalButtonController.start();
-    Navigator.of(context).pop();
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => BikeScannerScreen(
-        rentalRepository: widget.rentalRepository,
-        travelRepository: widget.travelRepository,
-        firebaseMessaging: widget.firebaseMessaging,
-      ),
-    ));
-  }
 
   @override
   void initState() {
@@ -90,14 +75,6 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _locationHandler = Location();
-    late StreamSubscription<LocationData> _locationSubscription;
-    _locationHandler.enableBackgroundMode();
-    _locationSubscription = _locationHandler.onLocationChanged
-        .listen((LocationData currentLocation) async {
-      print(
-          'Location: ${currentLocation.latitude}, ${currentLocation.longitude}');
-    });
     return BlocProvider(
         create: (context) {
           bloc = NearbyDocksBloc(
@@ -274,14 +251,24 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
                                 ),
                                 onPressed: () {
                                   Navigator.of(context).pop();
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => BikeScannerScreen(
-                                      rentalRepository: widget.rentalRepository,
-                                      travelRepository: widget.travelRepository,
-                                      firebaseMessaging:
-                                          widget.firebaseMessaging,
-                                    ),
-                                  ));
+                                  Navigator.of(context)
+                                      .push(MaterialPageRoute(
+                                        builder: (context) => BikeScannerScreen(
+                                          rentalRepository:
+                                              widget.rentalRepository,
+                                          travelRepository:
+                                              widget.travelRepository,
+                                          firebaseMessaging:
+                                              widget.firebaseMessaging,
+                                        ),
+                                      ))
+                                      .then((value) => setState(() {
+                                            BlocProvider.of<NearbyDocksBloc>(
+                                                    context)
+                                                .add(
+                                              const GetNearByDocks(),
+                                            );
+                                          }));
                                 },
                                 style: ElevatedButton.styleFrom(
                                     primary: primaryBlue),

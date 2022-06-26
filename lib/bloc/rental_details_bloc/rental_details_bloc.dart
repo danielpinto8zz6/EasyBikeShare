@@ -4,7 +4,6 @@ import 'package:easybikeshare/models/travel_event.dart';
 import 'package:easybikeshare/repositories/payment_repository.dart';
 import 'package:easybikeshare/repositories/travel_repository.dart';
 import 'package:equatable/equatable.dart';
-import 'package:easybikeshare/models/payment.dart';
 
 part 'rental_details_event.dart';
 part 'rental_details_state.dart';
@@ -20,7 +19,7 @@ class RentalDetailsBloc extends Bloc<RentalDetailsEvent, RentalDetailsState> {
       var travelEvents =
           await travelRepository.getTravelEventsByRentalId(event.rentalId);
 
-      if (payment != null) emit(RentalDetailsLoaded(payment, travelEvents));
+      emit(RentalDetailsLoaded(payment, travelEvents));
     });
   }
 }

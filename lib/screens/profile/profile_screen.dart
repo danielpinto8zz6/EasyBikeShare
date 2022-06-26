@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easybikeshare/bloc/user_bloc/user_bloc.dart';
 import 'package:easybikeshare/models/user.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
@@ -5,9 +7,13 @@ import 'package:easybikeshare/screens/credit_card/credit_card_details_screen.dar
 import 'package:easybikeshare/screens/credit_card/credit_card_screen.dart';
 import 'package:easybikeshare/screens/profile/edit_profile_screen.dart';
 import 'package:easybikeshare/screens/widgets/profile_widget.dart';
+import 'package:easybikeshare/screens/widgets/stopwatch.dart';
 import 'package:easybikeshare/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:latlong2/latlong.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserRepository userRepository;
