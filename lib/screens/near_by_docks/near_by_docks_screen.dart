@@ -7,6 +7,7 @@ import 'package:easybikeshare/models/dock.dart';
 import 'package:easybikeshare/notification.dart';
 import 'package:easybikeshare/providers/cachted_tile_provider.dart';
 import 'package:easybikeshare/repositories/bike_repository.dart';
+import 'package:easybikeshare/repositories/feedback_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/token_repository.dart';
 import 'package:easybikeshare/repositories/travel_repository.dart';
@@ -31,6 +32,8 @@ class NearByDocksScreen extends StatefulWidget {
   final BikeRepository bikeRepository;
   final RentalRepository rentalRepository;
   final TravelRepository travelRepository;
+  final FeedbackRepository feedbackRepository;
+
   final FCM firebaseMessaging;
 
   const NearByDocksScreen(
@@ -41,7 +44,8 @@ class NearByDocksScreen extends StatefulWidget {
       required this.bikeRepository,
       required this.rentalRepository,
       required this.firebaseMessaging,
-      required this.travelRepository})
+      required this.travelRepository,
+      required this.feedbackRepository})
       : super(key: key);
 
   @override
@@ -262,6 +266,8 @@ class _NearByDocksScreenState extends State<NearByDocksScreen> {
                                               widget.firebaseMessaging,
                                           userRepository: widget.userRepository,
                                           dockRepository: widget.dockRepository,
+                                          feedbackRepository:
+                                              widget.feedbackRepository,
                                         ),
                                       ))
                                       .then((value) => setState(() {

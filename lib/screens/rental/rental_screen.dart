@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:easybikeshare/bloc/rental_bloc/rental_bloc.dart';
 import 'package:easybikeshare/models/coordinates.dart';
+import 'package:easybikeshare/models/feedback.dart';
 import 'package:easybikeshare/models/dock.dart';
 import 'package:easybikeshare/models/rental.dart';
 import 'package:easybikeshare/models/travel_event.dart';
 import 'package:easybikeshare/notification.dart';
+import 'package:easybikeshare/repositories/feedback_repository.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/travel_repository.dart';
@@ -17,6 +19,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+import 'package:rating_dialog/rating_dialog.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -24,6 +27,8 @@ class RentalScreen extends StatefulWidget {
   final String bikeId;
   final RentalRepository rentalRepository;
   final TravelRepository travelRepository;
+  final FeedbackRepository feedbackRepository;
+
   final DockRepository dockRepository;
   final FCM firebaseMessaging;
 
@@ -33,6 +38,7 @@ class RentalScreen extends StatefulWidget {
       required this.rentalRepository,
       required this.firebaseMessaging,
       required this.travelRepository,
+      required this.feedbackRepository,
       required this.dockRepository})
       : super(key: key);
 
@@ -49,6 +55,8 @@ class RentalScreenState extends State<RentalScreen> {
   late CenterOnLocationUpdate _centerOnLocationUpdate;
   late StreamController<double?> _centerCurrentLocationStreamController;
   late final MapController _mapController;
+
+  late final RentalBloc rentalBloc;
 
   @override
   void initState() {
@@ -70,14 +78,15 @@ class RentalScreenState extends State<RentalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: BlocProvider(create: (context) {
-      var bloc = RentalBloc(widget.rentalRepository, widget.dockRepository)
+      rentalBloc = RentalBloc(widget.rentalRepository, widget.dockRepository,
+          widget.feedbackRepository)
         ..add(LoadRental(widget.bikeId));
 
       widget.firebaseMessaging.eventCtlr.stream.listen((event) {
-        bloc.add(RentalEventReceived(event));
+        rentalBloc.add(RentalEventReceived(event));
       });
 
-      return bloc;
+      return rentalBloc;
     }, child: BlocBuilder<RentalBloc, RentalState>(builder: (context, state) {
       var currentState = 'Loading....';
 
@@ -209,6 +218,44 @@ class RentalScreenState extends State<RentalScreen> {
       if (state is BikeAttached) {
         Wakelock.disable();
         _locationSubscription.cancel();
+
+        final _dialog = RatingDialog(
+          initialRating: 1.0,
+          // your app's name?
+          title: const Text(
+            'Feedback',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          // encourage your user to leave a high rating?
+          message: const Text(
+            'Tap a star to set your rating. Add more description here if you want.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 15),
+          ),
+          // your app's logo?
+          image: const FlutterLogo(size: 100),
+          submitButtonText: 'Submit',
+          commentHint: 'Set your custom comment hint',
+          onCancelled: () => print('cancelled'),
+          onSubmitted: (response) {
+            var feedback = FeedbackForm(
+                rental.id, response.comment, response.rating.toInt());
+
+            rentalBloc.add(SubmitFeedback(feedback));
+          },
+        );
+
+        // show the dialog
+        showDialog(
+          context: context,
+          barrierDismissible:
+              true, // set to false if you want to force a rating
+          builder: (context) => _dialog,
+        );
 
         Navigator.pop(context);
       }

@@ -2,6 +2,7 @@ import 'package:easybikeshare/bloc/near_by_docks_bloc/nearby_docks_bloc.dart';
 import 'package:easybikeshare/bloc/near_by_docks_bloc/nearby_docks_event.dart';
 import 'package:easybikeshare/notification.dart';
 import 'package:easybikeshare/repositories/bike_repository.dart';
+import 'package:easybikeshare/repositories/feedback_repository.dart';
 import 'package:easybikeshare/repositories/payment_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/token_repository.dart';
@@ -25,6 +26,8 @@ class MainScreen extends StatefulWidget {
   final RentalRepository rentalRepository;
   final PaymentRepository paymentRepository;
   final TravelRepository travelRepository;
+  final FeedbackRepository feedbackRepository;
+
   final FCM firebaseMessaging;
 
   const MainScreen(
@@ -36,7 +39,8 @@ class MainScreen extends StatefulWidget {
       required this.rentalRepository,
       required this.paymentRepository,
       required this.firebaseMessaging,
-      required this.travelRepository})
+      required this.travelRepository,
+      required this.feedbackRepository})
       : super(key: key);
 
   @override
@@ -74,6 +78,7 @@ class _MainScreenState extends State<MainScreen> {
                             firebaseMessaging: widget.firebaseMessaging,
                             userRepository: widget.userRepository,
                             dockRepository: widget.dockRepository,
+                            feedbackRepository: widget.feedbackRepository,
                           ),
                         ))
                         .then((value) => setState(() {
@@ -119,13 +124,15 @@ class _MainScreenState extends State<MainScreen> {
     switch (pos) {
       case 0:
         return NearByDocksScreen(
-            dockRepository: widget.dockRepository,
-            userRepository: widget.userRepository,
-            tokenRepository: widget.tokenRepository,
-            bikeRepository: widget.bikeRepository,
-            rentalRepository: widget.rentalRepository,
-            travelRepository: widget.travelRepository,
-            firebaseMessaging: widget.firebaseMessaging);
+          dockRepository: widget.dockRepository,
+          userRepository: widget.userRepository,
+          tokenRepository: widget.tokenRepository,
+          bikeRepository: widget.bikeRepository,
+          rentalRepository: widget.rentalRepository,
+          travelRepository: widget.travelRepository,
+          firebaseMessaging: widget.firebaseMessaging,
+          feedbackRepository: widget.feedbackRepository,
+        );
       case 1:
         return RentalHistoryScreen(
             rentalRepository: widget.rentalRepository,

@@ -16,6 +16,15 @@ class LoadRental extends RentalEvent {
   List<Object> get props => [bikeId];
 }
 
+class SubmitFeedback extends RentalEvent {
+  final FeedbackForm feedback;
+
+  const SubmitFeedback(this.feedback);
+
+  @override
+  List<Object> get props => [feedback];
+}
+
 class RentalEventReceived extends RentalEvent {
   final String event;
 

@@ -1,8 +1,10 @@
 import 'package:bloc/bloc.dart';
+import 'package:easybikeshare/models/feedback.dart';
 import 'package:easybikeshare/models/coordinates.dart';
 import 'package:easybikeshare/models/dock.dart';
 import 'package:easybikeshare/models/dock_status.dart';
 import 'package:easybikeshare/models/rental.dart';
+import 'package:easybikeshare/repositories/feedback_repository.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:equatable/equatable.dart';
@@ -15,6 +17,7 @@ class RentalBloc extends Bloc<RentalEvent, RentalState> {
   final RentalRepository rentalRepository;
   final DockRepository dockRepository;
   final locationHandler = Location();
+  final FeedbackRepository feedbackRepository;
 
   Map<String, RentalState> rentalStateMap = {
     'bike-validated': BikeValidated(),
@@ -25,7 +28,8 @@ class RentalBloc extends Bloc<RentalEvent, RentalState> {
     'bike-unlock-failed': BikeUnlockFailed()
   };
 
-  RentalBloc(this.rentalRepository, this.dockRepository)
+  RentalBloc(
+      this.rentalRepository, this.dockRepository, this.feedbackRepository)
       : super(RentalInitial()) {
     on<LoadRental>((event, emit) async {
       var result = await rentalRepository.createRental(event.bikeId, null);
@@ -55,6 +59,10 @@ class RentalBloc extends Bloc<RentalEvent, RentalState> {
           }
         }
       }
+    });
+
+    on<SubmitFeedback>((event, emit) async {
+      await feedbackRepository.createFeedback(event.feedback);
     });
   }
 }

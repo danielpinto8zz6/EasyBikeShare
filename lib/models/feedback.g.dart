@@ -1,18 +1,20 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'travel_event.dart';
+part of 'feedback.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-TravelEvent _$TravelEventFromJson(Map<String, dynamic> json) => TravelEvent(
+FeedbackForm _$FeedbackFormFromJson(Map<String, dynamic> json) => FeedbackForm(
       json['rentalId'] as String,
-      Coordinates.fromJson(json['coordinates'] as Map<String, dynamic>),
+      json['message'] as String,
+      json['rating'] as int,
     );
 
-Map<String, dynamic> _$TravelEventToJson(TravelEvent instance) =>
+Map<String, dynamic> _$FeedbackFormToJson(FeedbackForm instance) =>
     <String, dynamic>{
       'rentalId': instance.rentalId,
-      'coordinates': instance.coordinates,
+      'message': instance.message,
+      'rating': instance.rating,
     };

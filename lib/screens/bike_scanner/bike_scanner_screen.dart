@@ -1,6 +1,7 @@
 import 'package:easybikeshare/bloc/user_bloc/user_bloc.dart';
 import 'package:easybikeshare/notification.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
+import 'package:easybikeshare/repositories/feedback_repository.dart';
 import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/travel_repository.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
@@ -16,6 +17,8 @@ class BikeScannerScreen extends StatefulWidget {
   final TravelRepository travelRepository;
   final UserRepository userRepository;
   final DockRepository dockRepository;
+  final FeedbackRepository feedbackRepository;
+
   final FCM firebaseMessaging;
 
   const BikeScannerScreen(
@@ -24,7 +27,8 @@ class BikeScannerScreen extends StatefulWidget {
       required this.firebaseMessaging,
       required this.travelRepository,
       required this.userRepository,
-      required this.dockRepository})
+      required this.dockRepository,
+      required this.feedbackRepository})
       : super(key: key);
 
   @override
@@ -107,6 +111,8 @@ class _BikeScannerState extends State<BikeScannerScreen> {
                                           firebaseMessaging:
                                               widget.firebaseMessaging,
                                           dockRepository: widget.dockRepository,
+                                          feedbackRepository:
+                                              widget.feedbackRepository,
                                         )),
                                 (Route<dynamic> route) => route.isFirst);
                           })),
