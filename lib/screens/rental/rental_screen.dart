@@ -120,7 +120,7 @@ class RentalScreenState extends State<RentalScreen> {
 
         return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
           Container(
-            height: 600,
+            height: 540,
             alignment: Alignment.centerLeft,
             child: FlutterMap(
               mapController: _mapController,
@@ -219,7 +219,7 @@ class RentalScreenState extends State<RentalScreen> {
         Wakelock.disable();
         _locationSubscription.cancel();
 
-        final _dialog = RatingDialog(
+        final dialog = RatingDialog(
           initialRating: 1.0,
           // your app's name?
           title: const Text(
@@ -240,24 +240,28 @@ class RentalScreenState extends State<RentalScreen> {
           image: const FlutterLogo(size: 100),
           submitButtonText: 'Submit',
           commentHint: 'Set your custom comment hint',
-          onCancelled: () => print('cancelled'),
+          onCancelled: () => Navigator.pop(context),
           onSubmitted: (response) {
             var feedback = FeedbackForm(
                 rental.id, response.comment, response.rating.toInt());
 
             rentalBloc.add(SubmitFeedback(feedback));
+
+            Navigator.pop(context);
           },
         );
 
-        // show the dialog
-        showDialog(
-          context: context,
-          barrierDismissible:
-              true, // set to false if you want to force a rating
-          builder: (context) => _dialog,
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          // show the dialog
+          showDialog(
+            context: context,
+            barrierDismissible:
+                true, // set to false if you want to force a rating
+            builder: (context) => dialog,
+          );
+        });
 
-        Navigator.pop(context);
+        return Container();
       }
       if (state is BikeValidationFailed) {}
       if (state is BikeUnlockFailed) {}

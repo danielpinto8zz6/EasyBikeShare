@@ -73,7 +73,6 @@ class _RentalDetailsState extends State<RentalDetailsScreen> {
             String value = state.payment?.value != null
                 ? "${state.payment!.value}€ "
                 : 'NaN';
-            String distance = "24km";
             String duration = widget.rental.startDate != null &&
                     widget.rental.endDate != null
                 ? "${widget.rental.endDate!.difference(widget.rental.startDate!).inMinutes}min"
@@ -130,20 +129,6 @@ class _RentalDetailsState extends State<RentalDetailsScreen> {
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20),
                         )))),
-                const SizedBox(height: 24),
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),
-                    child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: SizedBox(
-                            child: Row(children: [
-                          const Icon(Icons.location_on_outlined),
-                          const SizedBox(width: 6),
-                          Text(
-                            "Distance: $distance",
-                            style: const TextStyle(fontSize: 16),
-                          )
-                        ])))),
                 const SizedBox(height: 24),
                 Padding(
                     padding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),
