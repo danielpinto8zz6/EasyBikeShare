@@ -30,7 +30,7 @@ class BikeUnlocked extends RentalState {
   List<Object> get props => [docks];
 }
 
-class BikeAttached extends RentalState {}
+class BikeLocked extends RentalState {}
 
 class BikeValidationFailed extends RentalState {}
 

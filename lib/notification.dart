@@ -4,6 +4,7 @@ import 'package:easybikeshare/repositories/user_repository.dart';
 import 'package:easybikeshare/repositories/token_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -31,6 +32,11 @@ class FCM {
         streamCtlr.sink.add("message received");
         if (message.data.containsKey('event')) {
           eventCtlr.sink.add(message.data["event"]);
+        }
+
+        if (message.notification?.body != null) {
+          Fluttertoast.showToast(
+              msg: message.notification!.body!, gravity: ToastGravity.TOP);
         }
       },
     );

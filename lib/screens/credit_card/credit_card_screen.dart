@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:date_format/date_format.dart';
 import 'package:easybikeshare/bloc/user_bloc/user_bloc.dart';
 import 'package:easybikeshare/models/credit_card.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';

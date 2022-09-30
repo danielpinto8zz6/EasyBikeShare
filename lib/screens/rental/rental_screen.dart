@@ -215,7 +215,7 @@ class RentalScreenState extends State<RentalScreen> {
         ]);
       }
 
-      if (state is BikeAttached) {
+      if (state is BikeLocked) {
         Wakelock.disable();
         _locationSubscription.cancel();
 

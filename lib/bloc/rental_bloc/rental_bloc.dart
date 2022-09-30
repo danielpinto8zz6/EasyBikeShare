@@ -22,7 +22,7 @@ class RentalBloc extends Bloc<RentalEvent, RentalState> {
   Map<String, RentalState> rentalStateMap = {
     'bike-validated': BikeValidated(),
     'bike-reserved': BikeReserved(),
-    'bike-attached': BikeAttached(),
+    'bike-locked': BikeLocked(),
     'bike-validation-failed': BikeValidationFailed(),
     'bike-reservation-failed': BikeReservationFailed(),
     'bike-unlock-failed': BikeUnlockFailed()
