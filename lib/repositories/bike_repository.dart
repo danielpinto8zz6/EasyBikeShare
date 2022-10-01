@@ -3,7 +3,7 @@ import 'package:easybikeshare/models/bike.dart';
 import 'package:easybikeshare/repositories/api.dart';
 
 class BikeRepository {
-  var bikeByIdUrl = '$baseUrl/Bikes/';
+  var bikeByIdUrl = '$baseUrl/bikes/';
 
   final Dio dio;
 
