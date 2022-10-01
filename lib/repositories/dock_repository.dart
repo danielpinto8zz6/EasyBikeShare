@@ -2,11 +2,11 @@ import 'package:easybikeshare/models/coordinates.dart';
 import 'package:dio/dio.dart';
 import 'package:easybikeshare/models/dock.dart';
 import 'package:easybikeshare/models/dock_status.dart';
+import 'package:easybikeshare/repositories/api.dart';
 
 class DockRepository {
-  static String mainUrl = "http://192.168.1.199:8099/api";
-  var nearByBikesUrl = '$mainUrl/docks/nearby';
-  var getByBikeIdUrl = '$mainUrl/docks/bike/';
+  var nearByBikesUrl = '$baseUrl/docks/nearby';
+  var getByBikeIdUrl = '$baseUrl/docks/bike/';
 
   final Dio dio;
 

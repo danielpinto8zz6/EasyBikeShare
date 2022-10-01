@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:easybikeshare/repositories/api.dart';
 
 class TokenRepository {
-  static String mainUrl = "http://192.168.1.199:8099/api";
-  var setTokenUrl = '$mainUrl/tokens';
+  var setTokenUrl = '$baseUrl/tokens';
   final Dio dio;
 
   TokenRepository({required this.dio});
