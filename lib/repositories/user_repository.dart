@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:easybikeshare/models/credit_card.dart';
 import 'package:easybikeshare/models/user.dart';
+import 'package:easybikeshare/repositories/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepository {
-  static String mainUrl = "http://192.168.1.199:8099/api";
-  var authUrl = '$mainUrl/auth';
-  var usersUrl = '$mainUrl/users';
+  var authUrl = '$baseUrl/auth';
+  var usersUrl = '$baseUrl/users';
 
   final Dio dio;
 

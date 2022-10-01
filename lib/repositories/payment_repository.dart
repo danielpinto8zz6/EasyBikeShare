@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:easybikeshare/models/payment.dart';
+import 'package:easybikeshare/repositories/api.dart';
 
 class PaymentRepository {
-  static String mainUrl = "http://192.168.1.199:8099/api/payments";
-  var getByRentalIdUrl = '$mainUrl/rental/';
+  var getByRentalIdUrl = '$baseUrl/rental/';
 
   final Dio dio;
 

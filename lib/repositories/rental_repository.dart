@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:easybikeshare/models/dock.dart';
 import 'package:easybikeshare/models/rental.dart';
+import 'package:easybikeshare/repositories/api.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
 
 class RentalRepository {
-  static String mainUrl = 'http://192.168.1.199:8099/api';
-  var rentalsUrl = '$mainUrl/rentals';
+  var rentalsUrl = '$baseUrl/rentals';
 
   final Dio dio;
   final DockRepository dockRepository;

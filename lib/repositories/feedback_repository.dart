@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:easybikeshare/models/feedback.dart';
 import 'package:easybikeshare/models/rental.dart';
+import 'package:easybikeshare/repositories/api.dart';
 
 class FeedbackRepository {
-  static String mainUrl = 'http://192.168.1.199:8099/api';
-  var feedbackUrl = '$mainUrl/feedbacks';
+  var feedbackUrl = '$baseUrl/feedbacks';
 
   final Dio dio;
 

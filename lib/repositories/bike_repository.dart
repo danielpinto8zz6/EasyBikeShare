@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:easybikeshare/models/bike.dart';
+import 'package:easybikeshare/repositories/api.dart';
 
 class BikeRepository {
-  static String mainUrl = "http://192.168.1.199:8099/api";
-  var bikeByIdUrl = 'http://192.168.1.199:5020/api/Bikes/';
+  var bikeByIdUrl = '$baseUrl/Bikes/';
 
   final Dio dio;
 

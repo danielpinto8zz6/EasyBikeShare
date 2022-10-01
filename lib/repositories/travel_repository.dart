@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:easybikeshare/models/rental.dart';
 import 'package:easybikeshare/models/travel_event.dart';
+import 'package:easybikeshare/repositories/api.dart';
 
 class TravelRepository {
-  static String mainUrl = 'http://192.168.1.199:8099/api';
-  var travelUrl = '$mainUrl/travel';
+  var travelUrl = '$baseUrl/travel';
 
   final Dio dio;
 
