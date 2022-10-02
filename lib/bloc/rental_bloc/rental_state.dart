@@ -17,23 +17,17 @@ class RentalAccepted extends RentalState {
   const RentalAccepted(this.rental);
 }
 
-class BikeValidated extends RentalState {}
-
-class BikeReserved extends RentalState {}
-
-class BikeUnlocked extends RentalState {
+class NearByDocksLoaded extends RentalState {
   final List<Dock> docks;
 
-  const BikeUnlocked({required this.docks});
+  const NearByDocksLoaded(this.docks);
 
   @override
   List<Object> get props => [docks];
 }
 
+class BikeUnlocked extends RentalState {}
+
 class BikeLocked extends RentalState {}
 
-class BikeValidationFailed extends RentalState {}
-
-class BikeReservationFailed extends RentalState {}
-
-class BikeUnlockFailed extends RentalState {}
+class RentalFailed extends RentalState {}

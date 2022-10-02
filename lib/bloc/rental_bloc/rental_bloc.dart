@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
-import 'package:easybikeshare/models/feedback.dart';
 import 'package:easybikeshare/models/coordinates.dart';
-import 'package:easybikeshare/models/dock.dart';
 import 'package:easybikeshare/models/dock_status.dart';
+import 'package:easybikeshare/models/feedback.dart';
+import 'package:easybikeshare/models/dock.dart';
 import 'package:easybikeshare/models/rental.dart';
 import 'package:easybikeshare/repositories/feedback_repository.dart';
 import 'package:easybikeshare/repositories/dock_repository.dart';
@@ -20,12 +20,9 @@ class RentalBloc extends Bloc<RentalEvent, RentalState> {
   final FeedbackRepository feedbackRepository;
 
   Map<String, RentalState> rentalStateMap = {
-    'bike-validated': BikeValidated(),
-    'bike-reserved': BikeReserved(),
+    'bike-unlocked': BikeUnlocked(),
     'bike-locked': BikeLocked(),
-    'bike-validation-failed': BikeValidationFailed(),
-    'bike-reservation-failed': BikeReservationFailed(),
-    'bike-unlock-failed': BikeUnlockFailed()
+    'rental-failed': RentalFailed()
   };
 
   RentalBloc(
@@ -41,28 +38,24 @@ class RentalBloc extends Bloc<RentalEvent, RentalState> {
       if (rentalStateMap.containsKey(event.event)) {
         emit(rentalStateMap[event.event]!);
       }
-
-      if (event.event == 'bike-unlocked') {
-        final position = await locationHandler.getLocation();
-
-        if (position.latitude != null && position.longitude != null) {
-          try {
-            final coordinates = Coordinates(
-                latitude: position.latitude!, longitude: position.longitude!);
-
-            final List<Dock> docks = await dockRepository.getNearByDocks(
-                coordinates, 100, DockStatus.withBike);
-
-            emit(BikeUnlocked(docks: docks));
-          } catch (_) {
-            emit(BikeUnlocked(docks: List<Dock>.empty()));
-          }
-        }
-      }
     });
 
-    on<SubmitFeedback>((event, emit) async {
-      await feedbackRepository.createFeedback(event.feedback);
+    on<GetNearByDocks>((event, emit) async {
+      final position = await locationHandler.getLocation();
+
+      if (position.latitude != null && position.longitude != null) {
+        try {
+          final coordinates = Coordinates(
+              latitude: position.latitude!, longitude: position.longitude!);
+
+          final List<Dock> docks = await dockRepository.getNearByDocks(
+              coordinates, 10, DockStatus.withoutBike);
+
+          emit(NearByDocksLoaded(docks));
+        } catch (_) {
+          emit(NearByDocksLoaded(List<Dock>.empty()));
+        }
+      }
     });
   }
 }

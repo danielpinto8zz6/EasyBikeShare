@@ -72,11 +72,11 @@ class _RentalDetailsState extends State<RentalDetailsScreen> {
           if (state is RentalDetailsLoaded) {
             String value = state.payment?.value != null
                 ? "${state.payment!.value}€ "
-                : 'NaN';
+                : 'unknown';
             String duration = widget.rental.startDate != null &&
                     widget.rental.endDate != null
                 ? "${widget.rental.endDate!.difference(widget.rental.startDate!).inMinutes}min"
-                : 'NaN';
+                : 'unknown';
             String startDate = widget.rental.startDate != null
                 ? formatDate(widget.rental.startDate!,
                     [yyyy, '/', mm, '/', dd, ' ', hh, ':', mm])

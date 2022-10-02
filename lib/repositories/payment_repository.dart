@@ -3,7 +3,7 @@ import 'package:easybikeshare/models/payment.dart';
 import 'package:easybikeshare/repositories/api.dart';
 
 class PaymentRepository {
-  var getByRentalIdUrl = '$baseUrl/rental/';
+  var getByRentalIdUrl = '$baseUrl/payments/rental/';
 
   final Dio dio;
 

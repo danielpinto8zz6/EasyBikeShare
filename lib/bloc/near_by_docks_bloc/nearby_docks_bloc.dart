@@ -45,7 +45,7 @@ class NearbyDocksBloc extends Bloc<NearbyDocksEvent, NearByDocksState> {
               latitude: position.latitude!, longitude: position.longitude!);
 
           final List<Dock> docks = await dockRepository.getNearByDocks(
-              coordinates, 100, DockStatus.withBike);
+              coordinates, 10, DockStatus.withBike);
 
           emit(NearByDocksLoaded(docks: docks));
         } catch (_) {

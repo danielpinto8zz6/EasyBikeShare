@@ -64,6 +64,13 @@ class UserRepository {
     return response.data["token"];
   }
 
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.remove('username');
+    prefs.remove('token');
+  }
+
   Future<bool> register(String username, String password) async {
     Response response = await dio.post(usersUrl, data: {
       "username": username,

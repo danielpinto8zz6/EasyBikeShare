@@ -6,7 +6,7 @@ import 'package:easybikeshare/repositories/rental_repository.dart';
 import 'package:easybikeshare/repositories/travel_repository.dart';
 import 'package:easybikeshare/repositories/user_repository.dart';
 import 'package:easybikeshare/screens/credit_card/credit_card_screen.dart';
-import 'package:easybikeshare/screens/rental/rental_screen.dart';
+import 'package:easybikeshare/screens/rental/rental_loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -102,7 +102,7 @@ class _BikeScannerState extends State<BikeScannerScreen> {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        RentalScreen(
+                                        RentalLoadingScreen(
                                           bikeId: barcode.rawValue!,
                                           rentalRepository:
                                               widget.rentalRepository,
