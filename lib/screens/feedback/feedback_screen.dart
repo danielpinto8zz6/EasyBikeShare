@@ -68,7 +68,9 @@ class FeedbackScreenState extends State<FeedbackScreen> {
                       style: TextStyle(fontSize: 15),
                     ),
                     // your app's logo?
-                    image: const FlutterLogo(size: 10),
+                    image: const Image(
+                        image: AssetImage('assets/images/bicycle.png'),
+                        width: 150),
                     submitButtonText: 'Submit',
                     commentHint: 'Set your custom comment hint',
                     onCancelled: () => Navigator.of(context).pop(),

@@ -11,9 +11,14 @@ class RentalDetailsInitial extends RentalDetailsState {}
 
 class RentalDetailsLoading extends RentalDetailsState {}
 
-class RentalDetailsLoaded extends RentalDetailsState {
-  final Payment? payment;
-  final List<TravelEvent>? travelEvents;
+class PaymentLoaded extends RentalDetailsState {
+  final Payment payment;
 
-  const RentalDetailsLoaded(this.payment, this.travelEvents);
+  const PaymentLoaded(this.payment);
+}
+
+class TravelEventsLoaded extends RentalDetailsState {
+  final List<TravelEvent> travelEvents;
+
+  const TravelEventsLoaded(this.travelEvents);
 }

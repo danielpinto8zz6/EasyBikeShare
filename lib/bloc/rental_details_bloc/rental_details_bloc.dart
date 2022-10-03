@@ -16,10 +16,15 @@ class RentalDetailsBloc extends Bloc<RentalDetailsEvent, RentalDetailsState> {
       : super(RentalDetailsInitial()) {
     on<LoadRentalDetails>((event, emit) async {
       var payment = await paymentRepository.getByRentalId(event.rentalId);
+      if (payment != null) {
+        emit(PaymentLoaded(payment));
+      }
+
       var travelEvents =
           await travelRepository.getTravelEventsByRentalId(event.rentalId);
-
-      emit(RentalDetailsLoaded(payment, travelEvents));
+      if (travelEvents != null) {
+        emit(TravelEventsLoaded(travelEvents));
+      }
     });
   }
 }

@@ -25,27 +25,10 @@ class RentalDetailsScreen extends StatefulWidget {
 }
 
 class _RentalDetailsState extends State<RentalDetailsScreen> {
-  late Future<List<Polyline>> polylines;
-
-  Future<List<Polyline>> getPolylines() async {
-    var polyLines = [
-      Polyline(
-        points: [
-          LatLng(50.5, -0.09),
-          LatLng(51.3498, -6.2603),
-          LatLng(53.8566, 2.3522),
-        ],
-        strokeWidth: 4.0,
-        color: Colors.amber,
-      ),
-    ];
-    await Future.delayed(const Duration(seconds: 3));
-    return polyLines;
-  }
+  String paymentValue = '';
 
   @override
   void initState() {
-    polylines = getPolylines();
     super.initState();
   }
 
@@ -69,123 +52,125 @@ class _RentalDetailsState extends State<RentalDetailsScreen> {
             ..add(LoadRentalDetails(widget.rental.id));
         }, child: BlocBuilder<RentalDetailsBloc, RentalDetailsState>(
             builder: (context, state) {
-          if (state is RentalDetailsLoaded) {
-            String value = state.payment?.value != null
-                ? "${state.payment!.value}€ "
-                : 'unknown';
-            String duration = widget.rental.startDate != null &&
-                    widget.rental.endDate != null
-                ? "${widget.rental.endDate!.difference(widget.rental.startDate!).inMinutes}min"
-                : 'unknown';
-            String startDate = widget.rental.startDate != null
-                ? formatDate(widget.rental.startDate!,
-                    [yyyy, '/', mm, '/', dd, ' ', hh, ':', mm])
-                : 'unknown';
-
-            var points = state.travelEvents != null
-                ? state.travelEvents!
-                    .map((x) =>
-                        LatLng(x.coordinates.latitude, x.coordinates.longitude))
-                    .toList()
-                : List<LatLng>.empty();
-            var center = points.isNotEmpty ? points.first : LatLng(0, 0);
-            var zoom = points.isNotEmpty ? 16.0 : 1.0;
-
-            return Builder(builder: (context) {
-              return Column(children: [
-                Container(
-                  height: 400,
-                  alignment: Alignment.centerLeft,
-                  child: FlutterMap(
-                    options: MapOptions(
-                        interactiveFlags:
-                            InteractiveFlag.pinchZoom | InteractiveFlag.drag,
-                        center: center,
-                        zoom: zoom),
-                    layers: [
-                      TileLayerOptions(
-                          urlTemplate:
-                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          subdomains: ['a', 'b', 'c']),
-                      PolylineLayerOptions(
-                        polylines: [
-                          Polyline(
-                              points: points,
-                              strokeWidth: 4.0,
-                              color: Colors.black),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Padding(
-                    padding: EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),
-                    child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: SizedBox(
-                            child: Text(
-                          "Route summary",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
-                        )))),
-                const SizedBox(height: 24),
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),
-                    child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: SizedBox(
-                            child: Row(children: [
-                          const Icon(Icons.timer_outlined),
-                          const SizedBox(width: 6),
-                          Text(
-                            "Start date: $startDate",
-                            style: const TextStyle(fontSize: 16),
-                          )
-                        ])))),
-                const SizedBox(height: 24),
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),
-                    child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: SizedBox(
-                            child: Row(children: [
-                          const Icon(Icons.timelapse),
-                          const SizedBox(width: 6),
-                          Text(
-                            "Duration: $duration",
-                            style: const TextStyle(fontSize: 16),
-                          )
-                        ])))),
-                const SizedBox(height: 24),
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),
-                    child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: SizedBox(
-                            child: Row(children: [
-                          const Icon(Icons.price_change_outlined),
-                          const SizedBox(width: 6),
-                          Text(
-                            "Cost: $value",
-                            style: const TextStyle(fontSize: 16),
-                          )
-                        ])))),
-                const SizedBox(height: 24),
-              ]);
-            });
+          if (state is PaymentLoaded) {
+            if (state.payment.value != null) {
+              paymentValue = "${state.payment.value}€ ";
+            } else {
+              'unknown';
+            }
           }
 
-          return Container(
-              height: 500,
-              color: Colors.white,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: const <Widget>[CircularProgressIndicator()],
-                ),
-              ));
+          String duration = widget.rental.startDate != null &&
+                  widget.rental.endDate != null
+              ? "${widget.rental.endDate!.difference(widget.rental.startDate!).inMinutes}min"
+              : 'unknown';
+          String startDate = widget.rental.startDate != null
+              ? formatDate(widget.rental.startDate!,
+                  [yyyy, '/', mm, '/', dd, ' ', hh, ':', mm])
+              : 'unknown';
+
+          return Builder(builder: (context) {
+            return Column(children: [
+              Container(
+                height: 400,
+                alignment: Alignment.centerLeft,
+                child: state is TravelEventsLoaded &&
+                        state.travelEvents.isNotEmpty
+                    ? FlutterMap(
+                        options: MapOptions(
+                            interactiveFlags: InteractiveFlag.pinchZoom |
+                                InteractiveFlag.drag,
+                            center: LatLng(
+                                state.travelEvents.first.coordinates.latitude,
+                                state.travelEvents.first.coordinates.longitude),
+                            zoom: 16.0),
+                        layers: [
+                          TileLayerOptions(
+                              urlTemplate:
+                                  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              subdomains: ['a', 'b', 'c']),
+                          PolylineLayerOptions(
+                            polylines: [
+                              Polyline(
+                                  points: state.travelEvents
+                                      .map((x) => LatLng(x.coordinates.latitude,
+                                          x.coordinates.longitude))
+                                      .toList(),
+                                  strokeWidth: 4.0,
+                                  color: Colors.black),
+                            ],
+                          ),
+                        ],
+                      )
+                    : Container(
+                        height: 400,
+                        color: Colors.white,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: const <Widget>[
+                              CircularProgressIndicator()
+                            ],
+                          ),
+                        )),
+              ),
+              const SizedBox(height: 24),
+              const Padding(
+                  padding: EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                          child: Text(
+                        "Route summary",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      )))),
+              const SizedBox(height: 24),
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                          child: Row(children: [
+                        const Icon(Icons.timer_outlined),
+                        const SizedBox(width: 6),
+                        Text(
+                          "Start date: $startDate",
+                          style: const TextStyle(fontSize: 16),
+                        )
+                      ])))),
+              const SizedBox(height: 24),
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                          child: Row(children: [
+                        const Icon(Icons.timelapse),
+                        const SizedBox(width: 6),
+                        Text(
+                          "Duration: $duration",
+                          style: const TextStyle(fontSize: 16),
+                        )
+                      ])))),
+              const SizedBox(height: 24),
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                          child: Row(children: [
+                        const Icon(Icons.price_change_outlined),
+                        const SizedBox(width: 6),
+                        Text(
+                          "Cost: $paymentValue",
+                          style: const TextStyle(fontSize: 16),
+                        )
+                      ])))),
+              const SizedBox(height: 24),
+            ]);
+          });
         })));
   }
 }
